@@ -81,12 +81,69 @@ const Withdraw: React.FC = () => {
             <SelectTrigger className="bg-gray-100 border-none">
               <SelectValue placeholder="Select Bank" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="gtb">GTBank</SelectItem>
-              <SelectItem value="firstbank">First Bank</SelectItem>
+            <SelectContent className="max-h-72 overflow-y-auto">
+              {/* Commercial Banks */}
               <SelectItem value="access">Access Bank</SelectItem>
-              <SelectItem value="uba">UBA</SelectItem>
+              <SelectItem value="citibank">Citibank Nigeria</SelectItem>
+              <SelectItem value="ecobank">Ecobank Nigeria</SelectItem>
+              <SelectItem value="fidelity">Fidelity Bank</SelectItem>
+              <SelectItem value="firstbank">First Bank of Nigeria</SelectItem>
+              <SelectItem value="fcmb">First City Monument Bank</SelectItem>
+              <SelectItem value="gtb">Guaranty Trust Bank</SelectItem>
+              <SelectItem value="heritage">Heritage Bank</SelectItem>
+              <SelectItem value="keystone">Keystone Bank</SelectItem>
+              <SelectItem value="polaris">Polaris Bank</SelectItem>
+              <SelectItem value="providus">Providus Bank</SelectItem>
+              <SelectItem value="stanbic">Stanbic IBTC Bank</SelectItem>
+              <SelectItem value="standard">Standard Chartered Bank</SelectItem>
+              <SelectItem value="sterling">Sterling Bank</SelectItem>
+              <SelectItem value="sunTrust">SunTrust Bank</SelectItem>
+              <SelectItem value="titan">Titan Trust Bank</SelectItem>
+              <SelectItem value="union">Union Bank</SelectItem>
+              <SelectItem value="uba">United Bank for Africa</SelectItem>
+              <SelectItem value="unity">Unity Bank</SelectItem>
+              <SelectItem value="wema">Wema Bank</SelectItem>
               <SelectItem value="zenith">Zenith Bank</SelectItem>
+              
+              {/* Digital/Neo Banks */}
+              <SelectItem value="kuda">Kuda Bank</SelectItem>
+              <SelectItem value="vfd">VFD Microfinance Bank (V Bank)</SelectItem>
+              <SelectItem value="moniepoint">Moniepoint Microfinance Bank</SelectItem>
+              <SelectItem value="opay">OPay</SelectItem>
+              <SelectItem value="palmpay">PalmPay</SelectItem>
+              <SelectItem value="rubies">Rubies Bank</SelectItem>
+              <SelectItem value="mintyn">Mintyn Bank</SelectItem>
+              
+              {/* Selected Microfinance Banks */}
+              <SelectItem value="accion">Accion Microfinance Bank</SelectItem>
+              <SelectItem value="addosser">Addosser Microfinance Bank</SelectItem>
+              <SelectItem value="adeyemi">Adeyemi Microfinance Bank</SelectItem>
+              <SelectItem value="amju">AMJU Unique Microfinance Bank</SelectItem>
+              <SelectItem value="apex">Apex Microfinance Bank</SelectItem>
+              <SelectItem value="baobab">Baobab Microfinance Bank</SelectItem>
+              <SelectItem value="bowen">Bowen Microfinance Bank</SelectItem>
+              <SelectItem value="bridgeway">Bridgeway Microfinance Bank</SelectItem>
+              <SelectItem value="bromfield">Bromfield Microfinance Bank</SelectItem>
+              <SelectItem value="fina">FINA Trust Microfinance Bank</SelectItem>
+              <SelectItem value="finatrust">Finatrust Microfinance Bank</SelectItem>
+              <SelectItem value="firmus">Firmus Microfinance Bank</SelectItem>
+              <SelectItem value="firstoption">First Option Microfinance Bank</SelectItem>
+              <SelectItem value="firstroyal">First Royal Microfinance Bank</SelectItem>
+              <SelectItem value="hasal">Hasal Microfinance Bank</SelectItem>
+              <SelectItem value="ikoyi">Ikoyi-Osun Microfinance Bank</SelectItem>
+              <SelectItem value="infinity">Infinity Microfinance Bank</SelectItem>
+              <SelectItem value="lapo">LAPO Microfinance Bank</SelectItem>
+              <SelectItem value="mainstreet">Mainstreet Microfinance Bank</SelectItem>
+              <SelectItem value="npmb">NPF Microfinance Bank</SelectItem>
+              <SelectItem value="oya">Oya Microfinance Bank</SelectItem>
+              <SelectItem value="peace">Peace Microfinance Bank</SelectItem>
+              <SelectItem value="petra">Petra Microfinance Bank</SelectItem>
+              <SelectItem value="platinum">Platinum Microfinance Bank</SelectItem>
+              <SelectItem value="regent">Regent Microfinance Bank</SelectItem>
+              <SelectItem value="renmoney">Renmoney Microfinance Bank</SelectItem>
+              <SelectItem value="sparkle">Sparkle Microfinance Bank</SelectItem>
+              <SelectItem value="tajbank">TAJBank</SelectItem>
+              <SelectItem value="verite">Verite Microfinance Bank</SelectItem>
             </SelectContent>
           </Select>
         </div>
