@@ -10,13 +10,15 @@ interface BalanceCardProps {
 const BalanceCard: React.FC<BalanceCardProps> = ({ balance, isActivated }) => {
   const [hideBalance, setHideBalance] = React.useState(false);
 
+  const formattedBalance = new Intl.NumberFormat().format(balance);
+
   return (
     <div className="bg-noble rounded-lg p-4 text-white">
       <div className="flex justify-between items-start">
         <div>
           <p className="text-sm font-medium mb-2">Available Balance</p>
           <h2 className="text-3xl font-bold flex items-center">
-            ₦{hideBalance ? "•••••" : balance.toFixed(2)}
+            ₦{hideBalance ? "•••••" : formattedBalance}
           </h2>
         </div>
         <div className="flex flex-col items-end">

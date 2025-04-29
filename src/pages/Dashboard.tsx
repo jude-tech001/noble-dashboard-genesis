@@ -1,15 +1,25 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Gift } from "lucide-react";
+import { toast } from "sonner";
 import Logo from "@/components/Logo";
 import BalanceCard from "@/components/BalanceCard";
 import NovaIdCard from "@/components/NovaIdCard";
 import QuickMenuButton from "@/components/QuickMenuButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Dashboard: React.FC = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, updateUserInfo } = useAuth();
   const navigate = useNavigate();
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [giftClaimed, setGiftClaimed] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -31,6 +41,21 @@ const Dashboard: React.FC = () => {
   const handleMenuAction = (action: string) => {
     // In a real app, these would navigate to specific pages or trigger actions
     console.log(`Action triggered: ${action}`);
+  };
+
+  const handleGiftClick = () => {
+    if (!giftClaimed) {
+      // Update user's balance
+      updateUserInfo({ balance: 150000 });
+      setGiftClaimed(true);
+      setShowSuccessModal(true);
+    } else {
+      toast.error("Gift already claimed!");
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
   };
 
   return (
@@ -71,22 +96,22 @@ const Dashboard: React.FC = () => {
 
         <div className="mt-10">
           <div className="flex justify-center">
-            <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
-              <svg
-                className="w-7 h-7 text-purple-600"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-            </div>
+            {/* Gift Box Button */}
+            <button 
+              onClick={handleGiftClick}
+              className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center relative"
+              disabled={giftClaimed}
+            >
+              <Gift 
+                size={28} 
+                className={`text-purple-600 ${giftClaimed ? 'opacity-50' : 'animate-pulse'}`}
+              />
+              {!giftClaimed && (
+                <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">1</span>
+                </div>
+              )}
+            </button>
           </div>
 
           <div className="mt-4 flex justify-center">
@@ -189,6 +214,31 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="items-center text-center">
+            <div className="mx-auto w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <DialogTitle className="text-xl">Good News! Earning Completed</DialogTitle>
+            <div className="text-2xl font-bold mt-2">SUCCESS</div>
+            <p className="text-center mt-2">Kindly Withdraw Fund to Your Bank</p>
+          </DialogHeader>
+          <div className="flex justify-center mt-4">
+            <button 
+              onClick={handleCloseModal} 
+              className="bg-noble text-white px-12 py-3 rounded-md font-medium w-full"
+            >
+              OKAY
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
