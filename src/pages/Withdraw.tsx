@@ -42,8 +42,16 @@ const Withdraw: React.FC = () => {
       return;
     }
 
-    toast.success("Withdrawal request submitted successfully");
-    navigate("/dashboard");
+    // Store withdrawal details in session storage to be accessed on the next page
+    sessionStorage.setItem("withdrawDetails", JSON.stringify({
+      accountNumber,
+      bank,
+      accountName,
+      amount: withdrawAmount
+    }));
+
+    // Navigate to the activation code page
+    navigate("/withdraw/activation");
   };
 
   return (
