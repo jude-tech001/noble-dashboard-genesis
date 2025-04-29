@@ -39,8 +39,12 @@ const Dashboard: React.FC = () => {
   };
 
   const handleMenuAction = (action: string) => {
-    // In a real app, these would navigate to specific pages or trigger actions
-    console.log(`Action triggered: ${action}`);
+    if (action === "withdraw") {
+      navigate("/withdraw");
+    } else {
+      // In a real app, these would navigate to specific pages or trigger actions
+      console.log(`Action triggered: ${action}`);
+    }
   };
 
   const handleGiftClick = () => {
@@ -115,7 +119,10 @@ const Dashboard: React.FC = () => {
           </div>
 
           <div className="mt-4 flex justify-center">
-            <button className="bg-noble text-white px-8 py-3 rounded-full font-medium">
+            <button 
+              onClick={() => navigate("/withdraw")}
+              className="bg-noble text-white px-8 py-3 rounded-full font-medium"
+            >
               Withdraw
             </button>
           </div>
