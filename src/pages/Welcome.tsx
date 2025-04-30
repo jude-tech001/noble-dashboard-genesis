@@ -1,11 +1,52 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "@/components/Logo";
 
-const Welcome: React.FC = () => {
+// Define the MoneyEmoji component for the floating animation
+const MoneyEmoji = ({ style }: { style: React.CSSProperties }) => {
   return (
-    <div className="min-h-screen bg-[#B5D9B6] px-4 flex flex-col relative overflow-hidden">
+    <img 
+      src="/lovable-uploads/18c66619-3835-46ec-b486-fcb2d37a2386.png" 
+      alt="Money emoji" 
+      className="absolute"
+      style={style}
+    />
+  );
+};
+
+const Welcome: React.FC = () => {
+  const [moneyEmojis, setMoneyEmojis] = useState<React.CSSProperties[]>([]);
+  
+  useEffect(() => {
+    // Create multiple money emojis with random positions
+    const emojis: React.CSSProperties[] = [];
+    
+    for (let i = 0; i < 10; i++) {
+      emojis.push({
+        left: `${Math.random() * 80 + 10}%`,
+        top: `${Math.random() * 30 + 40}%`,
+        width: `${Math.random() * 30 + 30}px`,
+        opacity: Math.random() * 0.5 + 0.5,
+        transform: `rotate(${Math.random() * 360}deg)`,
+        animation: `float ${Math.random() * 10 + 15}s linear infinite`,
+        animationDelay: `${Math.random() * 5}s`
+      });
+    }
+    
+    setMoneyEmojis(emojis);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#AED3AF] px-4 flex flex-col relative overflow-hidden">
+      {/* Custom curved bottom shape */}
+      <div className="absolute bottom-0 left-0 right-0 h-[200px] bg-transparent" 
+           style={{
+             borderBottomLeftRadius: "50% 20%",
+             borderBottomRightRadius: "50% 20%",
+           }}>
+      </div>
+      
       <div className="pt-16 px-4">
         <Logo />
         
@@ -23,30 +64,22 @@ const Welcome: React.FC = () => {
         </div>
       </div>
       
-      {/* Money bills illustration */}
+      {/* Money emojis container */}
       <div className="flex-1 relative mt-10">
-        <div className="absolute inset-0">
-          <div className="relative h-full">
-            {/* Money bills - using slightly darker green color for better visibility */}
-            <div className="absolute top-[10%] right-[20%] w-16 h-8 bg-[#6BB36D] rounded-sm transform rotate-12 opacity-80"></div>
-            <div className="absolute top-[20%] left-[30%] w-12 h-6 bg-[#6BB36D] rounded-sm transform -rotate-45 opacity-70"></div>
-            <div className="absolute top-[40%] right-[30%] w-14 h-7 bg-[#6BB36D] rounded-sm transform rotate-30 opacity-80"></div>
-            <div className="absolute top-[50%] left-[20%] w-10 h-5 bg-[#6BB36D] rounded-sm transform -rotate-20 opacity-70"></div>
-            <div className="absolute top-[60%] right-[40%] w-16 h-8 bg-[#6BB36D] rounded-sm transform rotate-15 opacity-90"></div>
-            <div className="absolute top-[70%] left-[45%] w-20 h-10 bg-[#6BB36D] rounded-sm transform -rotate-10 opacity-75"></div>
-          </div>
-        </div>
+        {moneyEmojis.map((style, index) => (
+          <MoneyEmoji key={index} style={style} />
+        ))}
       </div>
       
       {/* Progress bar */}
-      <div className="w-full px-6 mb-6">
+      <div className="w-full px-6 mb-6 z-10">
         <div className="h-2 w-full bg-[#1A2342]/20 rounded-full">
           <div className="h-2 bg-[#1B5E20] rounded-full w-[40%]"></div>
         </div>
       </div>
       
       {/* Buttons side by side */}
-      <div className="mb-16 px-6 flex space-x-3">
+      <div className="mb-16 px-6 flex space-x-3 z-10">
         <Link to="/signup/step1" className="flex-1">
           <button className="w-full py-3.5 px-4 rounded-lg font-medium bg-[#1B5E20] text-white text-lg">
             Register
