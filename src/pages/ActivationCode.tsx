@@ -12,7 +12,7 @@ const ActivationCode: React.FC = () => {
   const handleCodeComplete = (value: string) => {
     setActivationCode(value);
     
-    // Simulate code verification (you can implement actual verification logic)
+    // Simulate code verification
     if (value.length === 6) {
       setTimeout(() => {
         toast.success("Withdrawal request successful");
@@ -38,69 +38,63 @@ const ActivationCode: React.FC = () => {
     }
   };
 
-  // Keypad render function
-  const renderKeypad = () => {
-    const keys = [
-      ["1", "2", "3"],
-      ["4", "5", "6"], 
-      ["7", "8", "9"],
-      ["backspace", "0", "check"]
-    ];
-
-    return (
-      <div className="grid grid-cols-3 gap-4 mt-16">
-        {keys.map((row, rowIndex) => 
-          row.map((key, keyIndex) => (
-            <button
-              key={`${rowIndex}-${keyIndex}`}
-              className="h-16 w-16 rounded-full bg-green-800 text-white text-2xl flex items-center justify-center"
-              onClick={() => handleKeyPress(key)}
-            >
-              {key === "backspace" ? (
-                <X className="h-6 w-6" />
-              ) : key === "check" ? (
-                <Check className="h-6 w-6" />
-              ) : (
-                key
-              )}
-            </button>
-          ))
-        )}
-      </div>
-    );
-  };
-
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center pt-20 px-4">
-      <h1 className="text-3xl font-bold text-green-800">Enter Activation PIN</h1>
+    <div className="min-h-screen flex flex-col items-center bg-white">
+      {/* Header */}
+      <h1 className="text-3xl font-bold text-green-800 mt-10 mb-24">
+        Enter Activation PIN
+      </h1>
       
-      <div className="mt-32 w-full max-w-md">
+      {/* OTP Input */}
+      <div className="w-4/5 mx-auto mb-24">
         <InputOTP 
           maxLength={6}
           value={activationCode} 
           onChange={setActivationCode}
           pattern="^[0-9]{1,6}$"
           render={({ slots }) => (
-            <InputOTPGroup className="gap-2 w-full">
-              {slots.map((slot, index) => (
-                <InputOTPSlot 
-                  key={index} 
-                  {...slot} 
-                  index={index}
-                  className="rounded-xl h-14 w-full border-2 border-green-800 bg-gray-100"
-                />
-              ))}
+            <InputOTPGroup className="w-full">
+              <div className="w-full bg-gray-100 border border-green-800 rounded-full flex justify-center p-3">
+                {slots.map((slot, index) => (
+                  <div key={index} className="mx-1 text-center text-gray-400">⚪</div>
+                ))}
+              </div>
             </InputOTPGroup>
           )}
         />
       </div>
 
-      <div className="flex justify-center mt-12">
-        {renderKeypad()}
+      {/* Keypad */}
+      <div className="grid grid-cols-3 gap-4 w-full px-8">
+        {[
+          ["1", "2", "3"],
+          ["4", "5", "6"],
+          ["7", "8", "9"],
+          ["backspace", "0", "check"]
+        ].map((row, rowIndex) => (
+          <React.Fragment key={`row-${rowIndex}`}>
+            {row.map((key) => (
+              <button
+                key={key}
+                className="rounded-full bg-green-800 text-white text-2xl h-16 w-full flex items-center justify-center"
+                onClick={() => handleKeyPress(key)}
+              >
+                {key === "backspace" ? (
+                  <X className="h-6 w-6" />
+                ) : key === "check" ? (
+                  <Check className="h-6 w-6" />
+                ) : (
+                  key
+                )}
+              </button>
+            ))}
+          </React.Fragment>
+        ))}
       </div>
 
+      {/* Buy Activation Code Button */}
       <button 
-        className="mt-12 text-green-800 text-xl font-semibold"
+        className="mt-14 text-green-800 text-xl font-semibold"
         onClick={() => toast.info("Activation code purchase feature coming soon")}
       >
         Buy Activation Code
