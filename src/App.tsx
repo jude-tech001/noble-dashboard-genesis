@@ -12,6 +12,7 @@ import SignupStep2 from "./pages/SignupStep2";
 import Dashboard from "./pages/Dashboard";
 import Withdraw from "./pages/Withdraw";
 import ActivationCode from "./pages/ActivationCode";
+import FundWallet from "./pages/FundWallet";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/withdraw" element={<Withdraw />} />
             <Route path="/withdraw/activation" element={<ActivationCode />} />
+            <Route path="/fund-wallet" element={<FundWallet />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

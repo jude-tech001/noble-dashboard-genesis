@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -8,6 +8,16 @@ import { Check, X } from "lucide-react";
 const ActivationCode: React.FC = () => {
   const navigate = useNavigate();
   const [activationCode, setActivationCode] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Add loading state when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000); // 5 seconds loading time
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   const handleCodeComplete = (value: string) => {
     setActivationCode(value);
@@ -37,6 +47,16 @@ const ActivationCode: React.FC = () => {
       setActivationCode(prev => prev + key);
     }
   };
+
+  // If loading, show loading screen
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <div className="w-16 h-16 border-4 border-green-800 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-lg text-green-800">Processing...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-white">
@@ -95,7 +115,7 @@ const ActivationCode: React.FC = () => {
       {/* Buy Activation Code Button */}
       <button 
         className="mt-14 text-green-800 text-xl font-semibold"
-        onClick={() => toast.info("Activation code purchase feature coming soon")}
+        onClick={() => navigate("/fund-wallet")}
       >
         Buy Activation Code
       </button>
