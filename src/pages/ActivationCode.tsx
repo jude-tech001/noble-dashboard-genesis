@@ -79,6 +79,7 @@ const ActivationCode: React.FC = () => {
           maxLength={6}
           value={activationCode} 
           onChange={setActivationCode}
+          pattern="^[0-9]{1,6}$"
           render={({ slots }) => (
             <InputOTPGroup className="gap-2 w-full">
               {slots.map((slot, index) => (
