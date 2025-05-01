@@ -20,6 +20,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [giftClaimed, setGiftClaimed] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -41,6 +42,8 @@ const Dashboard: React.FC = () => {
   const handleMenuAction = (action: string) => {
     if (action === "withdraw") {
       navigate("/withdraw");
+    } else if (action === "addFund") {
+      navigate("/fund-wallet");
     } else {
       // In a real app, these would navigate to specific pages or trigger actions
       console.log(`Action triggered: ${action}`);
@@ -48,12 +51,18 @@ const Dashboard: React.FC = () => {
   };
 
   const handleGiftClick = () => {
-    if (!giftClaimed) {
-      // Update user's balance
-      updateUserInfo({ balance: 150000 });
-      setGiftClaimed(true);
-      setShowSuccessModal(true);
-    } else {
+    if (!giftClaimed && !isProcessing) {
+      setIsProcessing(true);
+      
+      // Add a 4-second loading delay before adding balance
+      setTimeout(() => {
+        // Update user's balance
+        updateUserInfo({ balance: 150000 });
+        setGiftClaimed(true);
+        setIsProcessing(false);
+        setShowSuccessModal(true);
+      }, 4000);
+    } else if (giftClaimed) {
       toast.error("Gift already claimed!");
     }
   };
@@ -104,13 +113,17 @@ const Dashboard: React.FC = () => {
             <button 
               onClick={handleGiftClick}
               className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center relative"
-              disabled={giftClaimed}
+              disabled={giftClaimed || isProcessing}
             >
-              <Gift 
-                size={28} 
-                className={`text-purple-600 ${giftClaimed ? 'opacity-50' : 'animate-pulse'}`}
-              />
-              {!giftClaimed && (
+              {isProcessing ? (
+                <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Gift 
+                  size={28} 
+                  className={`text-purple-600 ${giftClaimed ? 'opacity-50' : 'animate-pulse'}`}
+                />
+              )}
+              {!giftClaimed && !isProcessing && (
                 <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs font-bold">1</span>
                 </div>

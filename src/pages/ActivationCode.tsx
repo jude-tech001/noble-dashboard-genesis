@@ -9,6 +9,7 @@ const ActivationCode: React.FC = () => {
   const navigate = useNavigate();
   const [activationCode, setActivationCode] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [displayedCode, setDisplayedCode] = useState<string[]>(Array(6).fill("⚪"));
   
   // Add loading state when component mounts
   useEffect(() => {
@@ -30,6 +31,19 @@ const ActivationCode: React.FC = () => {
       }, 1000);
     }
   };
+
+  // Update displayed code when activation code changes
+  useEffect(() => {
+    const newDisplay = [...displayedCode];
+    for (let i = 0; i < 6; i++) {
+      if (i < activationCode.length) {
+        newDisplay[i] = activationCode[i];
+      } else {
+        newDisplay[i] = "⚪";
+      }
+    }
+    setDisplayedCode(newDisplay);
+  }, [activationCode]);
 
   // Keypad button click handler
   const handleKeyPress = (key: string) => {
@@ -75,8 +89,10 @@ const ActivationCode: React.FC = () => {
           render={({ slots }) => (
             <InputOTPGroup className="w-full">
               <div className="w-full bg-gray-100 border border-green-800 rounded-full flex justify-center p-3">
-                {slots.map((slot, index) => (
-                  <div key={index} className="mx-1 text-center text-gray-400">⚪</div>
+                {displayedCode.map((digit, index) => (
+                  <div key={index} className="mx-1 text-center text-xl font-bold">
+                    {digit}
+                  </div>
                 ))}
               </div>
             </InputOTPGroup>

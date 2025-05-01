@@ -12,7 +12,13 @@ const FundWallet: React.FC = () => {
   };
 
   const handleFundOption = (option: string) => {
-    toast.info(`${option} funding option selected. Feature coming soon.`);
+    if (option === "Card") {
+      toast.info("Card funding option selected. Feature coming soon.");
+    } else if (option === "Bank Transfer") {
+      navigate("/fund-wallet/bank-transfer");
+    } else if (option === "Flutterwave") {
+      navigate("/fund-wallet/flutterwave");
+    }
   };
 
   return (
