@@ -64,10 +64,10 @@ const FlutterwaveConfirmation: React.FC = () => {
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-gray-600">Account Number</p>
-                <p className="text-xl font-bold">8060695932</p>
+                <p className="text-xl font-bold">1234567890</p>
               </div>
               <button 
-                onClick={() => handleCopy("8060695932", "Account Number")}
+                onClick={() => handleCopy("1234567890", "Account Number")}
                 className="bg-yellow-500 text-white px-4 py-2 rounded"
               >
                 Copy
