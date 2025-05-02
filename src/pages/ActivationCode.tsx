@@ -9,7 +9,7 @@ const ActivationCode: React.FC = () => {
   const navigate = useNavigate();
   const [activationCode, setActivationCode] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [displayedCode, setDisplayedCode] = useState<string[]>(Array(6).fill("⚪"));
+  const [displayedCode, setDisplayedCode] = useState<string[]>(["⚪", "⚪", "⚪", "⚪", "⚪", "⚪"]);
   const validCode = "236589";
   
   // Add loading state when component mounts
@@ -38,12 +38,10 @@ const ActivationCode: React.FC = () => {
 
   // Update displayed code when activation code changes
   useEffect(() => {
-    const newDisplay = [...displayedCode];
+    const newDisplay = Array(6).fill("⚪");
     for (let i = 0; i < 6; i++) {
       if (i < activationCode.length) {
         newDisplay[i] = activationCode[i];
-      } else {
-        newDisplay[i] = "⚪";
       }
     }
     setDisplayedCode(newDisplay);
