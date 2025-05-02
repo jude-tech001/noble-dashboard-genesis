@@ -31,6 +31,13 @@ const groupChannels: GroupChannel[] = [
     members: 934,
     description: "Get help with payment issues",
     link: "https://t.me/nobleearnsupport"
+  },
+  {
+    id: "gc-004",
+    name: "WhatsApp Group",
+    members: 1752,
+    description: "Join our WhatsApp community for instant support",
+    link: "https://chat.whatsapp.com/EOfgJsm8fyW1btAgrjkvhW"
   }
 ];
 

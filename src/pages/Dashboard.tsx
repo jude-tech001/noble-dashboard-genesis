@@ -53,18 +53,15 @@ const Dashboard: React.FC = () => {
     return null;
   }
 
-  const getTimeOfDay = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "morning";
-    if (hour < 18) return "afternoon";
-    return "evening";
-  };
-
   const handleMenuAction = (action: string) => {
     if (action === "withdraw") {
       navigate("/withdraw");
     } else if (action === "addFund") {
       navigate("/fund-wallet");
+    } else if (action === "buyAirtime") {
+      toast.info("Airtime purchase feature coming soon");
+    } else if (action === "buyData") {
+      toast.info("Data purchase feature coming soon");
     } else if (action === "transactions") {
       setActiveTab("transactions");
     } else if (action === "groups") {
@@ -101,12 +98,9 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-8">
-      <div className="px-4 py-6 bg-white">
+      <div className="px-4 py-4 bg-white">
         <div className="flex justify-between items-center">
           <Logo />
-          <h1 className="text-2xl font-bold">
-            Good {getTimeOfDay()}
-          </h1>
           <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
             <svg
               className="w-6 h-6 text-gray-600"
@@ -122,13 +116,6 @@ const Dashboard: React.FC = () => {
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
           </button>
-        </div>
-
-        <div className="mt-4">
-          <p className="text-lg mb-1">Hello!</p>
-          <p className="text-xl text-noble font-semibold">
-            {user.firstName}
-          </p>
         </div>
       </div>
 
@@ -212,11 +199,11 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-10">
+              <div className="mt-6">
                 <NovaIdCard id={user.id || "33966608mlfp8gbwes4y"} />
               </div>
 
-              <div className="mt-10">
+              <div className="mt-6">
                 <h2 className="text-xl font-semibold">Quick Menu</h2>
                 
                 <div className="grid grid-cols-3 gap-6 mt-4">
