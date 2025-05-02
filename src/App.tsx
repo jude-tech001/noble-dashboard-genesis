@@ -17,6 +17,7 @@ import BankTransferPayment from "./pages/BankTransferPayment";
 import FlutterwavePayment from "./pages/FlutterwavePayment";
 import FlutterwaveConfirmation from "./pages/FlutterwaveConfirmation";
 import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Welcome />} />
+            <Route path="/index" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup/step1" element={<SignupStep1 />} />
             <Route path="/signup/step2" element={<SignupStep2 />} />

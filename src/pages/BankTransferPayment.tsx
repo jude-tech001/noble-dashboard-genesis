@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, Check } from "lucide-react";
+import { ArrowLeft, Copy } from "lucide-react";
 import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BankTransferPayment: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 mins in seconds
   const [paymentStatus, setPaymentStatus] = useState<"none" | "processing" | "failed">("none");
   
@@ -15,7 +15,7 @@ const BankTransferPayment: React.FC = () => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `-${mins} mins ${secs} secs`;
+    return `${mins} mins ${secs} secs`;
   };
   
   // Timer countdown
@@ -54,7 +54,7 @@ const BankTransferPayment: React.FC = () => {
   // Processing payment modal
   if (paymentStatus === "processing") {
     return (
-      <div className="min-h-screen bg-gray-100 relative">
+      <div className="min-h-screen bg-gray-50 relative">
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg w-[85%] max-w-md">
             <h2 className="text-2xl font-bold text-center mb-6">Payment Processing</h2>
@@ -66,7 +66,7 @@ const BankTransferPayment: React.FC = () => {
         </div>
         
         {/* Background content */}
-        <div className="bg-gray-200 p-4 flex items-center">
+        <div className="bg-gray-100 p-4 flex items-center">
           <ArrowLeft size={24} onClick={handleBack} className="mr-2 cursor-pointer" />
           <h1 className="text-xl font-bold">Bank Transfer</h1>
         </div>
@@ -77,7 +77,7 @@ const BankTransferPayment: React.FC = () => {
   // Failed payment modal
   if (paymentStatus === "failed") {
     return (
-      <div className="min-h-screen bg-gray-100 relative">
+      <div className="min-h-screen bg-gray-50 relative">
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-[90%] max-w-md">
             <div className="flex justify-center mb-4">
@@ -99,7 +99,7 @@ const BankTransferPayment: React.FC = () => {
         </div>
         
         {/* Background content */}
-        <div className="bg-gray-200 p-4 flex items-center">
+        <div className="bg-gray-100 p-4 flex items-center">
           <ArrowLeft size={24} onClick={handleBack} className="mr-2 cursor-pointer" />
           <h1 className="text-xl font-bold">Bank Transfer</h1>
         </div>
@@ -107,94 +107,94 @@ const BankTransferPayment: React.FC = () => {
     );
   }
   
+  // Main page with account details
   return (
     <div className="min-h-screen bg-white">
-      <div className="bg-gray-200 p-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <ArrowLeft size={24} onClick={handleBack} className="mr-2 cursor-pointer" />
-          <h1 className="text-xl font-bold">Bank Transfer</h1>
-        </div>
-        <button 
-          onClick={handleBack} 
-          className="text-red-500 font-medium"
-        >
-          Cancel
+      <div className="bg-gray-100 p-4 flex items-center">
+        <button onClick={handleBack} className="mr-2">
+          <ArrowLeft size={24} className="text-black" />
         </button>
+        <h1 className="text-xl font-bold">Bank Transfer</h1>
       </div>
       
       <div className="p-4">
-        <div className="flex justify-between items-center my-6">
-          <div className="w-12 h-12 rounded-full bg-blue-800 flex items-center justify-center">
-            <span className="text-white">🔄</span>
-          </div>
-          <div className="text-right">
-            <h2 className="text-2xl font-bold">NGN 6,500</h2>
-            <p className="text-sm text-gray-500">chukwuemekajames562@gmail.com</p>
-          </div>
+        <div className="mt-4">
+          <h2 className="text-xl font-semibold mb-2">Fund Wallet via Bank Transfer</h2>
+          <p className="text-gray-500 text-sm">
+            Transfer To This Account Below Within 30mins And Get Activation Code Once Your Payment Got Confirmed
+          </p>
         </div>
         
-        <p className="text-center text-lg font-medium my-8">
-          Proceed to your bank app to complete this Transfer
-        </p>
-        
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-          {/* Amount */}
-          <div className="mb-5">
-            <p className="text-gray-600 mb-1">Amount</p>
-            <div className="flex justify-between items-center">
-              <p className="text-xl font-bold">NGN 6500</p>
-              <button 
-                onClick={() => handleCopy("6500", "Amount")}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-md"
-              >
-                Copy
-              </button>
+        <div className="mt-6 bg-gray-50 rounded-lg p-4">
+          <div className="flex items-start mb-4 justify-between">
+            <div className="flex items-start">
+              <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded mr-3">
+                <span className="text-green-600 text-xl">🏦</span>
+              </div>
+              <div>
+                <p className="text-gray-500">Bank Name</p>
+                <p className="text-green-800 font-bold text-xl">NOVA BANK</p>
+              </div>
+            </div>
+            <div className="px-3 py-1 bg-green-100 text-green-800 rounded text-sm">
+              Active
             </div>
           </div>
           
-          {/* Account Number */}
-          <div className="mb-5">
-            <p className="text-gray-600 mb-1">Account Number</p>
-            <div className="flex justify-between items-center">
+          <div className="flex items-center mb-4 border-t border-gray-200 pt-4">
+            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-3">
+              123
+            </div>
+            <div className="flex-grow">
+              <p className="text-gray-500">Account Number</p>
               <p className="text-xl font-bold">1703005963</p>
-              <button 
-                onClick={() => handleCopy("1703005963", "Account Number")}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-md"
-              >
-                Copy
-              </button>
+            </div>
+            <button 
+              onClick={() => handleCopy("1703005963", "Account Number")}
+              className="bg-green-700 text-white rounded-full px-4 py-2 flex items-center"
+            >
+              <Copy size={16} className="mr-1" /> Copy
+            </button>
+          </div>
+          
+          <div className="flex items-center mb-4 border-t border-gray-200 pt-4">
+            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-3">
+              👤
+            </div>
+            <div>
+              <p className="text-gray-500">Account Name</p>
+              <p className="text-green-800 font-bold text-xl">Jude Samuel</p>
             </div>
           </div>
           
-          {/* Bank Name */}
-          <div className="mb-5">
-            <p className="text-gray-600 mb-1">Bank Name</p>
-            <p className="text-xl font-bold">NOVA BANK</p>
+          <div className="flex items-center mb-4 border-t border-gray-200 pt-4">
+            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-3">
+              💰
+            </div>
+            <div>
+              <p className="text-gray-500">Amount</p>
+              <p className="text-green-800 font-bold text-xl">₦6,200</p>
+            </div>
           </div>
           
-          {/* Account Name */}
-          <div className="mb-2">
-            <p className="text-gray-600 mb-1">Account Name</p>
-            <p className="text-xl font-bold">JUDE SAMUEL</p>
+          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 my-6">
+            <h3 className="font-medium mb-1">Hi, {user?.firstName || "User"}</h3>
+            <p className="text-sm text-gray-600">
+              Make A One Time Payment In Bank Details Above To Activate Your Account And Withdraw Instantly
+            </p>
           </div>
-        </div>
-        
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-          <p className="text-center mb-4">
-            Pay to this specific account and get your account code
+          
+          <p className="text-center text-green-800 text-sm mb-6">
+            this one-time account expires in {formatTime(timeLeft)}
           </p>
           
           <button 
             onClick={handlePaymentConfirm} 
-            className="w-full bg-yellow-500 text-black text-center py-4 rounded-md font-bold"
+            className="w-full bg-green-700 text-white text-center py-4 rounded-md font-bold"
           >
-            I have made this bank Transfer
+            I Have Made Payment
           </button>
         </div>
-        
-        <p className="text-green-800 text-center text-sm mt-4">
-          this one-time account expires in {formatTime(timeLeft)}
-        </p>
       </div>
     </div>
   );
