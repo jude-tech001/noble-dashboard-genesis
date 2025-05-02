@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Gift, ArrowLeft, ArrowRight } from "lucide-react";
+import { Gift, ArrowLeft, ArrowRight, Users, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import Logo from "@/components/Logo";
 import BalanceCard from "@/components/BalanceCard";
