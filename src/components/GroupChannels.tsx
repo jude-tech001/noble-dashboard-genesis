@@ -16,21 +16,7 @@ const groupChannels: GroupChannel[] = [
     name: "Noble Earn Official",
     members: 2548,
     description: "Official channel for announcements and updates",
-    link: "https://t.me/nobleearn"
-  },
-  {
-    id: "gc-002",
-    name: "Earning Tips & Tricks",
-    members: 1255,
-    description: "Share your earning tips and get advice",
-    link: "https://t.me/nobleearntips"
-  },
-  {
-    id: "gc-003",
-    name: "Payment Support",
-    members: 934,
-    description: "Get help with payment issues",
-    link: "https://t.me/nobleearnsupport"
+    link: "https://t.me/+HREMaiQyr2o1YjY0"
   },
   {
     id: "gc-004",
@@ -48,8 +34,6 @@ const GroupChannels: React.FC = () => {
   
   return (
     <div className="mt-6">
-      <h2 className="text-xl font-semibold mb-4">Group Channels</h2>
-      
       <div className="space-y-4">
         {groupChannels.map((channel) => (
           <div key={channel.id} className="bg-white p-4 rounded-lg shadow-sm">
@@ -73,12 +57,6 @@ const GroupChannels: React.FC = () => {
             <p className="text-sm text-gray-600 mt-2">{channel.description}</p>
           </div>
         ))}
-      </div>
-      
-      <div className="text-center mt-4">
-        <button className="text-green-700 font-medium">
-          View All Channels
-        </button>
       </div>
     </div>
   );

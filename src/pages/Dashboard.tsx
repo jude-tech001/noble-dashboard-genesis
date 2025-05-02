@@ -28,6 +28,7 @@ const Dashboard: React.FC = () => {
   const { user, isAuthenticated, logout, updateUserInfo } = useAuth();
   const navigate = useNavigate();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showActivationMessage, setShowActivationMessage] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   
@@ -58,19 +59,14 @@ const Dashboard: React.FC = () => {
       navigate("/withdraw");
     } else if (action === "addFund") {
       navigate("/fund-wallet");
-    } else if (action === "buyAirtime") {
-      toast.info("Airtime purchase feature coming soon");
-    } else if (action === "buyData") {
-      toast.info("Data purchase feature coming soon");
+    } else if (action === "buyAirtime" || action === "buyData") {
+      setShowActivationMessage(true);
     } else if (action === "transactions") {
       setActiveTab("transactions");
     } else if (action === "groups") {
       setActiveTab("groups");
     } else if (action === "support") {
       setActiveTab("support");
-    } else {
-      // In a real app, these would navigate to specific pages
-      console.log(`Action triggered: ${action}`);
     }
   };
 
@@ -94,6 +90,11 @@ const Dashboard: React.FC = () => {
 
   const handleCloseModal = () => {
     setShowSuccessModal(false);
+  };
+
+  const handleCloseActivationMessage = () => {
+    setShowActivationMessage(false);
+    navigate("/fund-wallet");
   };
 
   return (
@@ -264,17 +265,13 @@ const Dashboard: React.FC = () => {
                   />
                   
                   <QuickMenuButton
-                    icon={
-                      <Users size={24} />
-                    }
+                    icon={<Users size={24} />}
                     label="Groups"
                     onClick={() => handleMenuAction("groups")}
                   />
                   
                   <QuickMenuButton
-                    icon={
-                      <MessageSquare size={24} />
-                    }
+                    icon={<MessageSquare size={24} />}
                     label="Support"
                     onClick={() => handleMenuAction("support")}
                   />
@@ -335,6 +332,31 @@ const Dashboard: React.FC = () => {
               className="bg-green-800 text-white px-12 py-3 rounded-md font-medium w-full"
             >
               OKAY
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Activation Required Modal */}
+      <Dialog open={showActivationMessage} onOpenChange={setShowActivationMessage}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="items-center text-center">
+            <div className="mx-auto w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mb-4">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-600">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <DialogTitle className="text-xl">Activation Required</DialogTitle>
+            <p className="text-center mt-4">Buy activation code to use this feature</p>
+          </DialogHeader>
+          <div className="flex justify-center mt-4">
+            <button 
+              onClick={handleCloseActivationMessage} 
+              className="bg-green-800 text-white px-12 py-3 rounded-md font-medium w-full"
+            >
+              Buy Activation Code
             </button>
           </div>
         </DialogContent>

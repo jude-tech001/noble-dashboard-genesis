@@ -10,6 +10,7 @@ const BankTransferPayment: React.FC = () => {
   const { user } = useAuth();
   const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 mins in seconds
   const [paymentStatus, setPaymentStatus] = useState<"none" | "processing" | "failed">("none");
+  const [isLoading, setIsLoading] = useState(true);
   
   // Format time to mins:secs
   const formatTime = (seconds: number) => {
@@ -17,6 +18,15 @@ const BankTransferPayment: React.FC = () => {
     const secs = seconds % 60;
     return `${mins} mins ${secs} secs`;
   };
+  
+  // Add initial loading state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 4000); // 4 seconds loading time
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   // Timer countdown
   useEffect(() => {
@@ -50,6 +60,16 @@ const BankTransferPayment: React.FC = () => {
       setPaymentStatus("failed");
     }, 4000);
   };
+
+  // Initial loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <div className="w-16 h-16 border-4 border-green-800 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-lg text-green-800">Loading account details...</p>
+      </div>
+    );
+  }
 
   // Processing payment modal
   if (paymentStatus === "processing") {
@@ -118,79 +138,79 @@ const BankTransferPayment: React.FC = () => {
       </div>
       
       <div className="p-4">
-        <div className="mt-4">
-          <h2 className="text-xl font-semibold mb-2">Fund Wallet via Bank Transfer</h2>
-          <p className="text-gray-500 text-sm">
+        <div className="mt-2">
+          <h2 className="text-lg font-semibold mb-1">Fund Wallet via Bank Transfer</h2>
+          <p className="text-gray-500 text-xs">
             Transfer To This Account Below Within 30mins And Get Activation Code Once Your Payment Got Confirmed
           </p>
         </div>
         
-        <div className="mt-6 bg-gray-50 rounded-lg p-4">
-          <div className="flex items-start mb-4 justify-between">
+        <div className="mt-4 bg-gray-50 rounded-lg p-4">
+          <div className="flex items-start mb-3 justify-between">
             <div className="flex items-start">
-              <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded mr-3">
-                <span className="text-green-600 text-xl">🏦</span>
+              <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded mr-2">
+                <span className="text-green-600 text-lg">🏦</span>
               </div>
               <div>
-                <p className="text-gray-500">Bank Name</p>
-                <p className="text-green-800 font-bold text-xl">NOVA BANK</p>
+                <p className="text-gray-500 text-xs">Bank Name</p>
+                <p className="text-green-800 font-bold">NOVA BANK</p>
               </div>
             </div>
-            <div className="px-3 py-1 bg-green-100 text-green-800 rounded text-sm">
+            <div className="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs">
               Active
             </div>
           </div>
           
-          <div className="flex items-center mb-4 border-t border-gray-200 pt-4">
-            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-3">
+          <div className="flex items-center mb-3 border-t border-gray-200 pt-3">
+            <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-2">
               123
             </div>
             <div className="flex-grow">
-              <p className="text-gray-500">Account Number</p>
-              <p className="text-xl font-bold">1703005963</p>
+              <p className="text-gray-500 text-xs">Account Number</p>
+              <p className="font-bold">1703005963</p>
             </div>
             <button 
               onClick={() => handleCopy("1703005963", "Account Number")}
-              className="bg-green-700 text-white rounded-full px-4 py-2 flex items-center"
+              className="bg-green-700 text-white rounded-full px-3 py-1 text-xs flex items-center"
             >
-              <Copy size={16} className="mr-1" /> Copy
+              <Copy size={12} className="mr-1" /> Copy
             </button>
           </div>
           
-          <div className="flex items-center mb-4 border-t border-gray-200 pt-4">
-            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-3">
+          <div className="flex items-center mb-3 border-t border-gray-200 pt-3">
+            <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-2">
               👤
             </div>
             <div>
-              <p className="text-gray-500">Account Name</p>
-              <p className="text-green-800 font-bold text-xl">Jude Samuel</p>
+              <p className="text-gray-500 text-xs">Account Name</p>
+              <p className="text-green-800 font-bold">Jude Samuel</p>
             </div>
           </div>
           
-          <div className="flex items-center mb-4 border-t border-gray-200 pt-4">
-            <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-3">
+          <div className="flex items-center mb-3 border-t border-gray-200 pt-3">
+            <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-400 mr-2">
               💰
             </div>
             <div>
-              <p className="text-gray-500">Amount</p>
-              <p className="text-green-800 font-bold text-xl">₦6,200</p>
+              <p className="text-gray-500 text-xs">Amount</p>
+              <p className="text-green-800 font-bold">₦6,200</p>
             </div>
           </div>
           
-          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 my-6">
-            <h3 className="font-medium mb-1">Hi, {user?.firstName || "User"}</h3>
-            <p className="text-sm text-gray-600">
+          <div className="bg-yellow-50 p-2 rounded-lg border border-yellow-200 my-3">
+            <h3 className="font-medium text-sm">Hi, {user?.firstName || "User"}</h3>
+            <p className="text-xs text-gray-600">
               Make A One Time Payment In Bank Details Above To Activate Your Account And Withdraw Instantly
             </p>
           </div>
           
-          <p className="text-center text-green-800 text-sm mb-6">
+          <p className="text-center text-green-800 text-xs mb-4">
             this one-time account expires in {formatTime(timeLeft)}
           </p>
           
           <button 
             onClick={handlePaymentConfirm} 
-            className="w-full bg-green-700 text-white text-center py-4 rounded-md font-bold"
+            className="w-full bg-green-700 text-white text-center py-3 rounded-md font-bold text-sm"
           >
             I Have Made Payment
           </button>

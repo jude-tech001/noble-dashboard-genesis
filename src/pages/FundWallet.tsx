@@ -27,9 +27,9 @@ const FundWallet: React.FC = () => {
       {/* Header */}
       <div className="flex items-center p-3 border-b">
         <button onClick={handleBack} className="mr-3">
-          <ArrowLeft size={20} className="text-green-800" />
+          <ArrowLeft size={18} className="text-green-800" />
         </button>
-        <h1 className="text-lg font-bold text-green-800">Fund Wallet</h1>
+        <h1 className="text-base font-bold text-green-800">Fund Wallet</h1>
       </div>
 
       {/* Fund options */}
@@ -40,12 +40,12 @@ const FundWallet: React.FC = () => {
           onClick={() => handleFundOption("Card")}
         >
           <div>
-            <h2 className="font-bold text-green-800">Fund with Card</h2>
+            <h2 className="font-bold text-sm text-green-800">Fund with Card</h2>
             <p className="text-gray-500 text-xs">
               Quick, hassle-free, and secure.
             </p>
           </div>
-          <ChevronRight className="text-gray-400" size={16} />
+          <ChevronRight className="text-gray-400" size={14} />
         </div>
 
         {/* Bank Transfer option */}
@@ -54,12 +54,12 @@ const FundWallet: React.FC = () => {
           onClick={() => handleFundOption("Bank Transfer")}
         >
           <div>
-            <h2 className="font-bold text-green-800">Fund with Bank Transfer</h2>
+            <h2 className="font-bold text-sm text-green-800">Fund with Bank Transfer</h2>
             <p className="text-gray-500 text-xs">
               Secure and reliable payment method.
             </p>
           </div>
-          <ChevronRight className="text-gray-400" size={16} />
+          <ChevronRight className="text-gray-400" size={14} />
         </div>
 
         {/* Flutterwave option */}
@@ -68,12 +68,12 @@ const FundWallet: React.FC = () => {
           onClick={() => handleFundOption("Flutterwave")}
         >
           <div>
-            <h2 className="font-bold text-green-800">Fund with Flutterwave</h2>
+            <h2 className="font-bold text-sm text-green-800">Fund with Flutterwave</h2>
             <p className="text-gray-500 text-xs">
               Trusted payment gateway.
             </p>
           </div>
-          <ChevronRight className="text-gray-400" size={16} />
+          <ChevronRight className="text-gray-400" size={14} />
         </div>
       </div>
 

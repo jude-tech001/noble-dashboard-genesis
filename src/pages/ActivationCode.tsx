@@ -2,14 +2,21 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { InputOTP, InputOTPGroup } from "@/components/ui/input-otp";
 import { Check, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const ActivationCode: React.FC = () => {
   const navigate = useNavigate();
   const [activationCode, setActivationCode] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [displayedCode, setDisplayedCode] = useState<string[]>(["⚪", "⚪", "⚪", "⚪", "⚪", "⚪"]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const validCode = "236589";
   
   // Add loading state when component mounts
@@ -27,8 +34,7 @@ const ActivationCode: React.FC = () => {
     // Check if code matches the valid code
     if (value.length === 6) {
       if (value === validCode) {
-        toast.success("Withdrawal request successful");
-        navigate("/dashboard");
+        setShowSuccessModal(true);
       } else {
         toast.error("Invalid activation code");
         setActivationCode("");
@@ -46,6 +52,11 @@ const ActivationCode: React.FC = () => {
     }
     setDisplayedCode(newDisplay);
   }, [activationCode]);
+  
+  const handleSuccessClose = () => {
+    setShowSuccessModal(false);
+    navigate("/payment-receipt");
+  };
 
   // Keypad button click handler
   const handleKeyPress = (key: string) => {
@@ -77,12 +88,12 @@ const ActivationCode: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center bg-white">
       {/* Header */}
-      <h1 className="text-3xl font-bold text-green-800 mt-10 mb-24">
+      <h1 className="text-2xl font-bold text-green-800 mt-8 mb-16">
         Enter Activation PIN
       </h1>
       
       {/* OTP Input */}
-      <div className="w-4/5 mx-auto mb-24">
+      <div className="w-4/5 mx-auto mb-16">
         <InputOTP 
           maxLength={6}
           value={activationCode} 
@@ -132,11 +143,29 @@ const ActivationCode: React.FC = () => {
 
       {/* Buy Activation Code Button */}
       <button 
-        className="mt-14 text-green-800 text-xl font-semibold"
+        className="mt-10 text-green-800 text-xl font-semibold"
         onClick={() => navigate("/fund-wallet")}
       >
         Buy Activation Code
       </button>
+      
+      {/* Success Dialog */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <div className="text-center">
+            <div className="mx-auto w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-4">
+              <Check className="h-12 w-12 text-white" />
+            </div>
+            <h2 className="text-2xl font-medium mb-4">Your Withdrawal was successful.</h2>
+            <button 
+              onClick={handleSuccessClose} 
+              className="w-full bg-green-800 text-white py-4 px-8 rounded-md text-lg font-medium"
+            >
+              OKay
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
