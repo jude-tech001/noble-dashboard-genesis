@@ -18,9 +18,9 @@ const BankTransferPayment: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setAccountDetails({
-        bankName: "Guaranty Trust Bank",
-        accountNumber: "0123456789",
-        accountName: "NOBLE EARN LTD"
+        bankName: "NOVA BANK",
+        accountNumber: "1703005963",
+        accountName: "JUDE SAMUEL"
       });
       setIsLoading(false);
     }, 4000);
