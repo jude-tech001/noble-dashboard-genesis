@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Tabs,
@@ -36,6 +37,18 @@ const Dashboard: React.FC = () => {
   const [giftClaimed, setGiftClaimed] = useState(() => {
     return localStorage.getItem("rewardClaimed") === "true";
   });
+  
+  // Last claim timestamp for 48-hour cooldown
+  const [lastClaimTime, setLastClaimTime] = useState(() => {
+    return parseInt(localStorage.getItem("lastClaimTime") || "0");
+  });
+  
+  // Check if cooldown has passed
+  const isCooldownOver = () => {
+    const now = Date.now();
+    const hoursPassed = (now - lastClaimTime) / (1000 * 60 * 60);
+    return hoursPassed >= 48;
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -43,12 +56,14 @@ const Dashboard: React.FC = () => {
     }
     
     // Check if this is a new user session and they have a previous balance
-    if (user && user.balance === 150000) {
+    if (user && user.balance === 150000 && !lastClaimTime) {
       // They already have the reward amount, mark as claimed
       setGiftClaimed(true);
       localStorage.setItem("rewardClaimed", "true");
+      setLastClaimTime(Date.now());
+      localStorage.setItem("lastClaimTime", Date.now().toString());
     }
-  }, [isAuthenticated, navigate, user]);
+  }, [isAuthenticated, navigate, user, lastClaimTime]);
 
   if (!user) {
     return null;
@@ -71,7 +86,12 @@ const Dashboard: React.FC = () => {
   };
 
   const handleGiftClick = () => {
-    if (!giftClaimed && !isProcessing) {
+    if (giftClaimed && !isCooldownOver()) {
+      toast.error("You can claim again after 48 hours!");
+      return;
+    }
+    
+    if (!isProcessing) {
       setIsProcessing(true);
       
       // Add a 4-second loading delay before adding balance
@@ -80,11 +100,14 @@ const Dashboard: React.FC = () => {
         updateUserInfo({ balance: 150000 });
         setGiftClaimed(true);
         localStorage.setItem("rewardClaimed", "true");
+        
+        // Set last claim time
+        setLastClaimTime(Date.now());
+        localStorage.setItem("lastClaimTime", Date.now().toString());
+        
         setIsProcessing(false);
         setShowSuccessModal(true);
       }, 4000);
-    } else if (giftClaimed) {
-      toast.error("Gift already claimed!");
     }
   };
 
@@ -166,17 +189,17 @@ const Dashboard: React.FC = () => {
                   <button 
                     onClick={handleGiftClick}
                     className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center relative"
-                    disabled={giftClaimed || isProcessing}
+                    disabled={isProcessing}
                   >
                     {isProcessing ? (
                       <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
                     ) : (
                       <Gift 
                         size={28} 
-                        className={`text-purple-600 ${giftClaimed ? 'opacity-50' : 'animate-pulse'}`}
+                        className={`text-purple-600 ${giftClaimed && !isCooldownOver() ? 'opacity-50' : 'animate-pulse'}`}
                       />
                     )}
-                    {!giftClaimed && !isProcessing && (
+                    {(!giftClaimed || isCooldownOver()) && !isProcessing && (
                       <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs font-bold">1</span>
                       </div>
@@ -184,9 +207,9 @@ const Dashboard: React.FC = () => {
                   </button>
                 </div>
 
-                {giftClaimed && (
+                {giftClaimed && !isCooldownOver() && (
                   <div className="text-center mt-2 text-sm text-gray-500">
-                    Reward already claimed
+                    Available again in 48 hours
                   </div>
                 )}
 
@@ -247,7 +270,7 @@ const Dashboard: React.FC = () => {
                         <path d="M8 12h8" />
                       </svg>
                     }
-                    label="Add Fund"
+                    label="Buy Code"
                     onClick={() => handleMenuAction("addFund")}
                   />
                   
