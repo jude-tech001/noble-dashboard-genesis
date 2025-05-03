@@ -1,12 +1,12 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Loader } from "lucide-react";
 
 const Withdraw: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +16,7 @@ const Withdraw: React.FC = () => {
   const [accountName, setAccountName] = useState("");
   const [selectedBank, setSelectedBank] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showProcessing, setShowProcessing] = useState(false);
 
   const nigerianBanks = [
     { name: "Access Bank", code: "044" },
@@ -64,10 +65,6 @@ const Withdraw: React.FC = () => {
     { name: "NOVA Bank", code: "999999" },
   ];
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
   const handleWithdraw = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -106,126 +103,120 @@ const Withdraw: React.FC = () => {
     }
     
     setIsSubmitting(true);
+    setShowProcessing(true);
     
-    // Navigate to activation page for code confirmation
-    navigate("/withdraw/activation", {
-      state: {
-        amount: withdrawAmount,
-        accountNumber,
-        accountName,
-        bank: selectedBank,
-        // Pass additional data needed for the withdrawal process
-        onSuccess: () => {
-          // This function will be called after successful activation
-          if (user) {
-            const newBalance = user.balance - withdrawAmount;
-            // Update user's balance
-            updateUserInfo({ balance: newBalance });
-            toast.success(`Withdrawal of ₦${withdrawAmount.toLocaleString()} successful`);
+    // Show loading for 4 seconds before redirecting
+    setTimeout(() => {
+      setShowProcessing(false);
+      setIsSubmitting(false);
+      
+      // Navigate to activation page for code confirmation
+      navigate("/withdraw/activation", {
+        state: {
+          amount: withdrawAmount,
+          accountNumber,
+          accountName,
+          bank: selectedBank,
+          // Pass additional data needed for the withdrawal process
+          onSuccess: () => {
+            // This function will be called after successful activation
+            if (user) {
+              const newBalance = user.balance - withdrawAmount;
+              // Update user's balance
+              updateUserInfo({ balance: newBalance });
+              toast.success(`Withdrawal of ₦${withdrawAmount.toLocaleString()} successful`);
+            }
           }
         }
-      }
-    });
-    
-    setIsSubmitting(false);
+      });
+    }, 4000);
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="flex items-center p-3 border-b">
-        <button onClick={handleBack} className="mr-3">
-          <ArrowLeft size={18} className="text-gray-800" />
-        </button>
-        <h1 className="text-base font-medium text-gray-800">Withdraw Funds</h1>
-      </div>
+    <div className="min-h-screen bg-white p-6">
+      <h1 className="text-2xl font-bold mb-6">Withdraw To Bank Account</h1>
 
-      <div className="p-4">
-        <div className="rounded-lg bg-gray-50 p-4 mb-6">
-          <p className="text-sm text-gray-500 mb-1">Available Balance</p>
-          <p className="text-3xl font-bold text-green-800">
-            ₦{user?.balance.toLocaleString() || "0"}
+      <form onSubmit={handleWithdraw} className="space-y-6">
+        <div>
+          <label className="block text-gray-700 mb-2">Account Number</label>
+          <Input
+            type="text"
+            value={accountNumber}
+            onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
+            maxLength={10}
+            placeholder="Enter account number"
+            className="h-14 bg-gray-100 border-none"
+            required
+          />
+        </div>
+        
+        <div>
+          <label className="block text-gray-700 mb-2">Bank Name</label>
+          <Select
+            value={selectedBank}
+            onValueChange={setSelectedBank}
+          >
+            <SelectTrigger className="h-14 bg-gray-100 border-none">
+              <SelectValue placeholder="Select Bank" />
+            </SelectTrigger>
+            <SelectContent className="max-h-80">
+              {nigerianBanks.map((bank) => (
+                <SelectItem key={bank.code || bank.name} value={bank.name}>
+                  {bank.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div>
+          <label className="block text-gray-700 mb-2">Account Name</label>
+          <Input
+            type="text"
+            value={accountName}
+            onChange={(e) => setAccountName(e.target.value)}
+            placeholder="Account Name"
+            className="h-14 bg-gray-100 border-none"
+            required
+          />
+        </div>
+        
+        <div>
+          <label className="block text-gray-700 mb-2">Amount</label>
+          <Input
+            type="text"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ''))}
+            placeholder="Enter amount"
+            className="h-14 bg-gray-100 border-none"
+            required
+          />
+        </div>
+        
+        <div className="py-2">
+          <p className="text-green-800 font-medium text-lg">
+            Available Balance: ₦{user?.balance.toLocaleString() || "0.00"}
           </p>
         </div>
         
-        <form onSubmit={handleWithdraw} className="space-y-6">
-          <div>
-            <Label htmlFor="amount" className="text-gray-700 mb-1 block">
-              Amount
-            </Label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₦</span>
-              <Input
-                id="amount"
-                type="text"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="pl-8"
-                placeholder="0.00"
-                required
-              />
-            </div>
+        <button
+          type="submit"
+          className="w-full bg-green-800 text-white py-4 rounded-full text-xl font-medium"
+          disabled={isSubmitting}
+        >
+          Proceed
+        </button>
+      </form>
+
+      {/* Processing Dialog */}
+      <Dialog open={showProcessing} onOpenChange={setShowProcessing}>
+        <DialogContent className="sm:max-w-md">
+          <div className="flex flex-col items-center justify-center p-6">
+            <Loader size={40} className="text-green-800 animate-spin mb-4" />
+            <p className="text-lg text-green-800 font-medium">Processing your withdrawal...</p>
           </div>
-          
-          <div>
-            <Label htmlFor="bank" className="text-gray-700 mb-1 block">
-              Select Bank
-            </Label>
-            <Select
-              value={selectedBank}
-              onValueChange={setSelectedBank}
-            >
-              <SelectTrigger id="bank">
-                <SelectValue placeholder="Select a bank" />
-              </SelectTrigger>
-              <SelectContent className="max-h-80">
-                {nigerianBanks.map((bank) => (
-                  <SelectItem key={bank.code || bank.name} value={bank.name}>
-                    {bank.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <Label htmlFor="accountNumber" className="text-gray-700 mb-1 block">
-              Account Number
-            </Label>
-            <Input
-              id="accountNumber"
-              type="text"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
-              maxLength={10}
-              placeholder="Enter account number"
-              required
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="accountName" className="text-gray-700 mb-1 block">
-              Account Name
-            </Label>
-            <Input
-              id="accountName"
-              type="text"
-              value={accountName}
-              onChange={(e) => setAccountName(e.target.value)}
-              placeholder="Enter account name"
-              required
-            />
-          </div>
-          
-          <button
-            type="submit"
-            className="w-full bg-green-800 text-white py-3 rounded-lg font-medium"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Processing..." : "Withdraw"}
-          </button>
-        </form>
-      </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
