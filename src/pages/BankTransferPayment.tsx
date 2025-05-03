@@ -173,7 +173,7 @@ const BankTransferPayment: React.FC = () => {
 
             <div className="mt-6 bg-gray-100 p-4 rounded-lg">
               <p className="text-gray-700">
-                Hi, {user?.name || "James"}
+                Hi, {user?.firstName || "James"}
               </p>
               <p className="text-gray-700 mt-2">
                 Make A One Time Payment In Bank Details Above To Activate Your Account And Withdraw Instantly
@@ -197,7 +197,7 @@ const BankTransferPayment: React.FC = () => {
 
       {/* Processing Dialog */}
       <Dialog open={showProcessingDialog} onOpenChange={setShowProcessingDialog}>
-        <DialogContent className="sm:max-w-md p-0 gap-0" hideClose>
+        <DialogContent className="sm:max-w-md p-0 gap-0">
           <div className="p-6">
             <h2 className="text-xl font-bold text-center mb-6">Payment Processing</h2>
             <div className="flex items-center justify-center">
@@ -210,7 +210,7 @@ const BankTransferPayment: React.FC = () => {
       
       {/* Payment Failure Dialog */}
       <Dialog open={showFailureDialog} onOpenChange={setShowFailureDialog}>
-        <DialogContent className="sm:max-w-md p-0 gap-0" hideClose>
+        <DialogContent className="sm:max-w-md p-0 gap-0">
           <div className="p-6">
             <div className="flex flex-col items-center mb-4">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
