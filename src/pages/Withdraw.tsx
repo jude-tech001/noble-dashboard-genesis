@@ -1,204 +1,228 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// Expanded list of Nigerian banks including microfinance banks
-const nigerianBanks = [
-  "Access Bank",
-  "Citibank Nigeria",
-  "Ecobank Nigeria",
-  "Fidelity Bank",
-  "First Bank of Nigeria",
-  "First City Monument Bank",
-  "Guaranty Trust Bank",
-  "Heritage Bank",
-  "Jaiz Bank",
-  "Keystone Bank",
-  "NOVA Bank",
-  "Polaris Bank",
-  "Providus Bank",
-  "Stanbic IBTC Bank",
-  "Standard Chartered Bank",
-  "Sterling Bank",
-  "SunTrust Bank",
-  "TAJ Bank",
-  "Titan Trust Bank",
-  "Union Bank of Nigeria",
-  "United Bank for Africa",
-  "Unity Bank",
-  "Wema Bank",
-  "Zenith Bank",
-  // Microfinance Banks
-  "Abbey Mortgage Bank",
-  "ACCION Microfinance Bank",
-  "Amju Unique Microfinance Bank",
-  "ASIFU Microfinance Bank",
-  "BC Kash Microfinance Bank",
-  "Bowen Microfinance Bank",
-  "Carbon Microfinance Bank",
-  "Cellulant Microfinance Bank",
-  "Creditville Microfinance Bank",
-  "Ekondo Microfinance Bank",
-  "Empire Trust Microfinance Bank",
-  "FINCA Microfinance Bank",
-  "FINEX Microfinance Bank",
-  "FirstTrust Mortgage Bank",
-  "Fortis Microfinance Bank",
-  "Goodnews Microfinance Bank",
-  "Grooming Centre Microfinance Bank",
-  "Hasal Microfinance Bank",
-  "Infinity Microfinance Bank",
-  "Kuda Microfinance Bank",
-  "Lagos Building Investment Company",
-  "Lapo Microfinance Bank",
-  "LBIC Mortgage Bank",
-  "Mainstreet Microfinance Bank",
-  "NPF Microfinance Bank",
-  "Opay Microfinance Bank",
-  "Page Financials Microfinance Bank",
-  "PalmPay Microfinance Bank",
-  "Parallex Bank",
-  "Peace Microfinance Bank",
-  "Petra Microfinance Bank",
-  "Platinum Mortgage Bank",
-  "Rephidim Microfinance Bank",
-  "Seed Capital Microfinance Bank",
-  "Sparkle Microfinance Bank",
-  "Trustfund Microfinance Bank",
-  "VFD Microfinance Bank"
-];
 
 const Withdraw: React.FC = () => {
   const navigate = useNavigate();
   const { user, updateUserInfo } = useAuth();
-  const [accountNumber, setAccountNumber] = useState("");
-  const [bankName, setBankName] = useState("");
-  const [accountName, setAccountName] = useState("");
   const [amount, setAmount] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [selectedBank, setSelectedBank] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const nigerianBanks = [
+    { name: "Access Bank", code: "044" },
+    { name: "Citibank", code: "023" },
+    { name: "Diamond Bank", code: "063" },
+    { name: "Dynamic Standard Bank", code: "" },
+    { name: "Ecobank Nigeria", code: "050" },
+    { name: "Fidelity Bank Nigeria", code: "070" },
+    { name: "First Bank of Nigeria", code: "011" },
+    { name: "First City Monument Bank", code: "214" },
+    { name: "Guaranty Trust Bank", code: "058" },
+    { name: "Heritage Bank Plc", code: "030" },
+    { name: "Jaiz Bank", code: "301" },
+    { name: "Keystone Bank Limited", code: "082" },
+    { name: "Providus Bank Plc", code: "101" },
+    { name: "Polaris Bank", code: "076" },
+    { name: "Stanbic IBTC Bank Nigeria Limited", code: "221" },
+    { name: "Standard Chartered Bank", code: "068" },
+    { name: "Sterling Bank", code: "232" },
+    { name: "Suntrust Bank Nigeria Limited", code: "100" },
+    { name: "Union Bank of Nigeria", code: "032" },
+    { name: "United Bank for Africa", code: "033" },
+    { name: "Unity Bank Plc", code: "215" },
+    { name: "Wema Bank", code: "035" },
+    { name: "Zenith Bank", code: "057" },
+    // Microfinance banks
+    { name: "Accion Microfinance Bank", code: "120001" },
+    { name: "Baobab Microfinance Bank", code: "090001" },
+    { name: "Grassroots Microfinance Bank", code: "090002" },
+    { name: "Infinity Microfinance Bank", code: "090003" },
+    { name: "Mainstreet Microfinance Bank", code: "090004" },
+    { name: "NPF Microfinance Bank", code: "070001" },
+    { name: "Petra Microfinance Bank", code: "090005" },
+    { name: "Unical Microfinance Bank", code: "090006" },
+    { name: "VFD Microfinance Bank", code: "566" },
+    { name: "Fortis Microfinance Bank", code: "070002" },
+    { name: "Seed Capital Microfinance Bank", code: "090007" },
+    { name: "Empire Trust Microfinance Bank", code: "090008" },
+    { name: "TCF MFB", code: "090115" },
+    { name: "Finca Microfinance Bank", code: "090143" },
+    { name: "Fina Trust Microfinance Bank", code: "090111" },
+    { name: "Ndiorah Microfinance Bank", code: "090128" },
+    { name: "Regent Microfinance Bank", code: "090125" },
+    { name: "Fidfund Microfinance Bank", code: "090126" },
+    { name: "BC Kash Microfinance Bank", code: "090127" },
+    { name: "NOVA Bank", code: "999999" },
+  ];
 
   const handleBack = () => {
     navigate(-1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleWithdraw = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
-    if (!accountNumber || !bankName || !accountName || !amount) {
-      toast.error("Please fill all fields");
+    // Form validation
+    if (!amount.trim()) {
+      toast.error("Please enter an amount");
       return;
     }
     
-    if (!/^\d{10}$/.test(accountNumber)) {
-      toast.error("Account number must be 10 digits");
+    if (!selectedBank) {
+      toast.error("Please select a bank");
       return;
     }
     
-    const amountValue = parseFloat(amount);
-    if (isNaN(amountValue) || amountValue <= 0) {
+    if (!accountNumber.trim() || accountNumber.length < 10) {
+      toast.error("Please enter a valid account number");
+      return;
+    }
+    
+    if (!accountName.trim()) {
+      toast.error("Please enter account name");
+      return;
+    }
+    
+    // Check if amount is valid
+    const withdrawAmount = parseFloat(amount);
+    if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
       toast.error("Please enter a valid amount");
       return;
     }
     
-    if (user && amountValue > user.balance) {
+    // Check if user has enough balance
+    if (user && withdrawAmount > user.balance) {
       toast.error("Insufficient balance");
       return;
     }
     
-    // Store withdrawal info in session storage
-    sessionStorage.setItem("withdrawal_info", JSON.stringify({
-      accountNumber,
-      bankName,
-      accountName,
-      amount: amountValue
-    }));
+    setIsSubmitting(true);
     
-    // Navigate to activation code page
-    navigate("/withdraw/activation");
+    // Navigate to activation page for code confirmation
+    navigate("/withdraw/activation", {
+      state: {
+        amount: withdrawAmount,
+        accountNumber,
+        accountName,
+        bank: selectedBank,
+        // Pass additional data needed for the withdrawal process
+        onSuccess: () => {
+          // This function will be called after successful activation
+          if (user) {
+            const newBalance = user.balance - withdrawAmount;
+            // Update user's balance
+            updateUserInfo({ balance: newBalance });
+            toast.success(`Withdrawal of ₦${withdrawAmount.toLocaleString()} successful`);
+          }
+        }
+      }
+    });
+    
+    setIsSubmitting(false);
   };
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="flex items-center p-4 border-b">
+      <div className="flex items-center p-3 border-b">
         <button onClick={handleBack} className="mr-3">
-          <ArrowLeft size={20} className="text-black" />
+          <ArrowLeft size={18} className="text-gray-800" />
         </button>
-        <h1 className="text-xl font-medium">Withdraw To Bank Account</h1>
+        <h1 className="text-base font-medium text-gray-800">Withdraw Funds</h1>
       </div>
 
       <div className="p-4">
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-6">
-            <div>
-              <label className="block text-gray-600 mb-2">Account Number</label>
-              <input
-                type="text"
-                value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value)}
-                className="w-full p-4 bg-gray-100 rounded-lg"
-                placeholder="Account Number"
-                maxLength={10}
-                pattern="\d{10}"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-600 mb-2">Bank Name</label>
-              <Select onValueChange={setBankName} value={bankName}>
-                <SelectTrigger className="w-full p-4 h-14 bg-gray-100">
-                  <SelectValue placeholder="Select Bank" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[45vh]">
-                  {nigerianBanks.map((bank) => (
-                    <SelectItem key={bank} value={bank}>
-                      {bank}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <label className="block text-gray-600 mb-2">Account Name</label>
-              <input
-                type="text"
-                value={accountName}
-                onChange={(e) => setAccountName(e.target.value)}
-                className="w-full p-4 bg-gray-100 rounded-lg"
-                placeholder="Account Name"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-600 mb-2">Amount</label>
-              <input
+        <div className="rounded-lg bg-gray-50 p-4 mb-6">
+          <p className="text-sm text-gray-500 mb-1">Available Balance</p>
+          <p className="text-3xl font-bold text-green-800">
+            ₦{user?.balance.toLocaleString() || "0"}
+          </p>
+        </div>
+        
+        <form onSubmit={handleWithdraw} className="space-y-6">
+          <div>
+            <Label htmlFor="amount" className="text-gray-700 mb-1 block">
+              Amount
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₦</span>
+              <Input
+                id="amount"
                 type="text"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full p-4 bg-gray-100 rounded-lg"
-                placeholder="Amount"
+                className="pl-8"
+                placeholder="0.00"
+                required
               />
             </div>
           </div>
           
-          <div className="mt-6 mb-6">
-            <p className="text-gray-800">
-              Available Balance: 
-              <span className="font-bold text-green-800"> ₦{user?.balance.toFixed(2) || "0.00"}</span>
-            </p>
+          <div>
+            <Label htmlFor="bank" className="text-gray-700 mb-1 block">
+              Select Bank
+            </Label>
+            <Select
+              value={selectedBank}
+              onValueChange={setSelectedBank}
+            >
+              <SelectTrigger id="bank">
+                <SelectValue placeholder="Select a bank" />
+              </SelectTrigger>
+              <SelectContent className="max-h-80">
+                {nigerianBanks.map((bank) => (
+                  <SelectItem key={bank.code || bank.name} value={bank.name}>
+                    {bank.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <Label htmlFor="accountNumber" className="text-gray-700 mb-1 block">
+              Account Number
+            </Label>
+            <Input
+              id="accountNumber"
+              type="text"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
+              maxLength={10}
+              placeholder="Enter account number"
+              required
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="accountName" className="text-gray-700 mb-1 block">
+              Account Name
+            </Label>
+            <Input
+              id="accountName"
+              type="text"
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
+              placeholder="Enter account name"
+              required
+            />
           </div>
           
           <button
             type="submit"
-            className="w-full bg-green-800 text-white py-4 rounded-lg font-medium"
+            className="w-full bg-green-800 text-white py-3 rounded-lg font-medium"
+            disabled={isSubmitting}
           >
-            Proceed
+            {isSubmitting ? "Processing..." : "Withdraw"}
           </button>
         </form>
       </div>
