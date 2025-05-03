@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Copy, Wallet, User2, Banknote } from "lucide-react";
@@ -22,7 +23,7 @@ const BankTransferPayment: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 4000);
+    }, 2000);
     
     return () => clearTimeout(timer);
   }, []);
@@ -83,11 +84,6 @@ const BankTransferPayment: React.FC = () => {
           </div>
         ) : (
           <>
-            <h2 className="text-xl font-medium text-gray-800 mb-2">Fund Wallet via Bank Transfer</h2>
-            <p className="text-gray-500 text-sm mb-6">
-              Transfer To This Account Below Within 30mins And Get Activation Code Once Your Payment Got Confirmed
-            </p>
-
             <div className="bg-gray-50 rounded-lg overflow-hidden">
               <div className="p-4 flex justify-between items-center">
                 <div className="flex-1">
@@ -133,7 +129,7 @@ const BankTransferPayment: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-gray-500 text-sm">Account Name</p>
-                    <p className="font-bold text-gray-800">{accountDetails.accountName.toLowerCase()}</p>
+                    <p className="font-bold text-gray-800">{accountDetails.accountName}</p>
                   </div>
                 </div>
               </div>
@@ -150,21 +146,14 @@ const BankTransferPayment: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-yellow-50 p-4">
-                <p className="text-xl font-medium mb-2">Hi, {user?.firstName || "User"}</p>
-                <p className="text-gray-600">
-                  Make A One Time Payment In Bank Details Above To Activate Your Account And Withdraw Instantly
-                </p>
-              </div>
-              
-              <div className="p-4 text-center text-green-800">
+              <div className="p-2 text-center text-green-800 text-sm">
                 <p>this one-time account expires in {formatTime(timeLeft)}</p>
               </div>
             </div>
 
             <button
               onClick={handlePaymentConfirmation}
-              className="w-full bg-green-800 text-white py-4 rounded-lg mt-6 font-medium"
+              className="w-full bg-green-800 text-white py-3 rounded-lg mt-4 font-medium"
             >
               I Have Made Payment
             </button>

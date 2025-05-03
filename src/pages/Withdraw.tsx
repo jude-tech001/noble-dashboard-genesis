@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// Expanded list of Nigerian banks including microfinance banks
 const nigerianBanks = [
   "Access Bank",
   "Citibank Nigeria",
@@ -15,6 +16,7 @@ const nigerianBanks = [
   "First City Monument Bank",
   "Guaranty Trust Bank",
   "Heritage Bank",
+  "Jaiz Bank",
   "Keystone Bank",
   "NOVA Bank",
   "Polaris Bank",
@@ -23,11 +25,51 @@ const nigerianBanks = [
   "Standard Chartered Bank",
   "Sterling Bank",
   "SunTrust Bank",
+  "TAJ Bank",
+  "Titan Trust Bank",
   "Union Bank of Nigeria",
   "United Bank for Africa",
   "Unity Bank",
   "Wema Bank",
-  "Zenith Bank"
+  "Zenith Bank",
+  // Microfinance Banks
+  "Abbey Mortgage Bank",
+  "ACCION Microfinance Bank",
+  "Amju Unique Microfinance Bank",
+  "ASIFU Microfinance Bank",
+  "BC Kash Microfinance Bank",
+  "Bowen Microfinance Bank",
+  "Carbon Microfinance Bank",
+  "Cellulant Microfinance Bank",
+  "Creditville Microfinance Bank",
+  "Ekondo Microfinance Bank",
+  "Empire Trust Microfinance Bank",
+  "FINCA Microfinance Bank",
+  "FINEX Microfinance Bank",
+  "FirstTrust Mortgage Bank",
+  "Fortis Microfinance Bank",
+  "Goodnews Microfinance Bank",
+  "Grooming Centre Microfinance Bank",
+  "Hasal Microfinance Bank",
+  "Infinity Microfinance Bank",
+  "Kuda Microfinance Bank",
+  "Lagos Building Investment Company",
+  "Lapo Microfinance Bank",
+  "LBIC Mortgage Bank",
+  "Mainstreet Microfinance Bank",
+  "NPF Microfinance Bank",
+  "Opay Microfinance Bank",
+  "Page Financials Microfinance Bank",
+  "PalmPay Microfinance Bank",
+  "Parallex Bank",
+  "Peace Microfinance Bank",
+  "Petra Microfinance Bank",
+  "Platinum Mortgage Bank",
+  "Rephidim Microfinance Bank",
+  "Seed Capital Microfinance Bank",
+  "Sparkle Microfinance Bank",
+  "Trustfund Microfinance Bank",
+  "VFD Microfinance Bank"
 ];
 
 const Withdraw: React.FC = () => {
@@ -68,6 +110,14 @@ const Withdraw: React.FC = () => {
       return;
     }
     
+    // Store withdrawal info in session storage
+    sessionStorage.setItem("withdrawal_info", JSON.stringify({
+      accountNumber,
+      bankName,
+      accountName,
+      amount: amountValue
+    }));
+    
     // Navigate to activation code page
     navigate("/withdraw/activation");
   };
@@ -104,7 +154,7 @@ const Withdraw: React.FC = () => {
                 <SelectTrigger className="w-full p-4 h-14 bg-gray-100">
                   <SelectValue placeholder="Select Bank" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[45vh]">
                   {nigerianBanks.map((bank) => (
                     <SelectItem key={bank} value={bank}>
                       {bank}
