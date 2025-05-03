@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, Wallet, User2, Bank } from "lucide-react";
+import { ArrowLeft, Copy, Wallet, User2, Banknote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -94,7 +93,7 @@ const BankTransferPayment: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center">
                     <div className="bg-gray-100 p-2 rounded-md mr-4">
-                      <Bank size={24} className="text-green-800" />
+                      <Banknote size={24} className="text-green-800" />
                     </div>
                     <div>
                       <p className="text-gray-500 text-sm">Bank Name</p>
