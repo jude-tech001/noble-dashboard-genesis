@@ -12,9 +12,7 @@ const FundWallet: React.FC = () => {
   };
 
   const handleFundOption = (option: string) => {
-    if (option === "Card") {
-      toast.info("Card funding option selected. Feature coming soon.");
-    } else if (option === "Bank Transfer") {
+    if (option === "Bank Transfer") {
       navigate("/fund-wallet/bank-transfer");
     } else if (option === "Flutterwave") {
       navigate("/fund-wallet/flutterwave");
@@ -24,40 +22,31 @@ const FundWallet: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="flex items-center p-3 border-b">
+      <div className="flex items-center p-4 border-b">
         <button onClick={handleBack} className="mr-3">
-          <ArrowLeft size={18} className="text-green-800" />
+          <ArrowLeft size={20} className="text-green-800" />
         </button>
-        <h1 className="text-base font-bold text-green-800">Fund Wallet</h1>
+        <h1 className="text-lg font-bold text-green-800">Fund Wallet</h1>
       </div>
 
-      {/* Fund options - More compact */}
-      <div className="mt-2 px-3">
-        {/* Card option */}
-        <div 
-          className="border-t border-b py-2 flex justify-between items-center cursor-pointer"
-          onClick={() => handleFundOption("Card")}
-        >
-          <h2 className="font-bold text-sm text-green-800">Fund with Card</h2>
-          <ChevronRight className="text-gray-400" size={14} />
-        </div>
-
+      {/* Fund options - Increased size */}
+      <div className="mt-4 px-4 max-w-md mx-auto">
         {/* Bank Transfer option */}
         <div 
-          className="border-b py-2 flex justify-between items-center cursor-pointer"
+          className="border rounded-lg p-4 mb-3 flex justify-between items-center cursor-pointer shadow-sm"
           onClick={() => handleFundOption("Bank Transfer")}
         >
-          <h2 className="font-bold text-sm text-green-800">Fund with Bank Transfer</h2>
-          <ChevronRight className="text-gray-400" size={14} />
+          <h2 className="font-bold text-base text-green-800">Fund with Bank Transfer</h2>
+          <ChevronRight className="text-gray-400" size={18} />
         </div>
 
         {/* Flutterwave option */}
         <div 
-          className="border-b py-2 flex justify-between items-center cursor-pointer"
+          className="border rounded-lg p-4 mb-3 flex justify-between items-center cursor-pointer shadow-sm"
           onClick={() => handleFundOption("Flutterwave")}
         >
-          <h2 className="font-bold text-sm text-green-800">Fund with Flutterwave</h2>
-          <ChevronRight className="text-gray-400" size={14} />
+          <h2 className="font-bold text-base text-green-800">Fund with Flutterwave</h2>
+          <ChevronRight className="text-gray-400" size={18} />
         </div>
       </div>
 
