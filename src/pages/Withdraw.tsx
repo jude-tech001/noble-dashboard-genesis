@@ -112,30 +112,21 @@ const Withdraw: React.FC = () => {
     setIsSubmitting(true);
     setShowProcessing(true);
     
+    // Store withdrawal information in sessionStorage instead of trying to pass a function
+    sessionStorage.setItem('withdrawalDetails', JSON.stringify({
+      amount: withdrawAmount,
+      accountNumber,
+      accountName,
+      bank: selectedBank,
+    }));
+    
     // Show loading for 4 seconds before redirecting
     setTimeout(() => {
       setShowProcessing(false);
       setIsSubmitting(false);
       
       // Navigate to activation page for code confirmation
-      navigate("/withdraw/activation", {
-        state: {
-          amount: withdrawAmount,
-          accountNumber,
-          accountName,
-          bank: selectedBank,
-          // Pass additional data needed for the withdrawal process
-          onSuccess: () => {
-            // This function will be called after successful activation
-            if (user) {
-              const newBalance = user.balance - withdrawAmount;
-              // Update user's balance
-              updateUserInfo({ balance: newBalance });
-              toast.success(`Withdrawal of ₦${withdrawAmount.toLocaleString()} successful`);
-            }
-          }
-        }
-      });
+      navigate("/withdraw/activation");
     }, 4000);
   };
 

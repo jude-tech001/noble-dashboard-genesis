@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { InputOTP, InputOTPGroup } from "@/components/ui/input-otp";
 import { Check, X } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +14,21 @@ import {
 
 const ActivationCode: React.FC = () => {
   const navigate = useNavigate();
+  const { user, updateUserInfo } = useAuth();
   const [activationCode, setActivationCode] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [withdrawalDetails, setWithdrawalDetails] = useState<any>(null);
   const [displayedCode, setDisplayedCode] = useState<string[]>(["⚪", "⚪", "⚪", "⚪", "⚪", "⚪"]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const validCode = "236589";
+  
+  // Get withdrawal details from sessionStorage
+  useEffect(() => {
+    const details = sessionStorage.getItem('withdrawalDetails');
+    if (details) {
+      setWithdrawalDetails(JSON.parse(details));
+    }
+  }, []);
   
   // Add loading state when component mounts
   useEffect(() => {
@@ -34,6 +45,13 @@ const ActivationCode: React.FC = () => {
     // Check if code matches the valid code
     if (value.length === 6) {
       if (value === validCode) {
+        // Process the withdrawal if details are available
+        if (withdrawalDetails && user) {
+          const newBalance = user.balance - withdrawalDetails.amount;
+          // Update user's balance
+          updateUserInfo({ balance: newBalance });
+          toast.success(`Withdrawal of ₦${withdrawalDetails.amount.toLocaleString()} successful`);
+        }
         setShowSuccessModal(true);
       } else {
         toast.error("Invalid activation code");
@@ -56,6 +74,8 @@ const ActivationCode: React.FC = () => {
   const handleSuccessClose = () => {
     setShowSuccessModal(false);
     navigate("/payment-receipt");
+    // Clear withdrawal details from sessionStorage after successful processing
+    sessionStorage.removeItem('withdrawalDetails');
   };
 
   // Keypad button click handler
