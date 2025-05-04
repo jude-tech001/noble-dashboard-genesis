@@ -19,6 +19,7 @@ const Withdraw: React.FC = () => {
   const [showProcessing, setShowProcessing] = useState(false);
 
   const nigerianBanks = [
+    // Traditional banks
     { name: "Access Bank", code: "044" },
     { name: "Citibank", code: "023" },
     { name: "Diamond Bank", code: "063" },
@@ -42,6 +43,12 @@ const Withdraw: React.FC = () => {
     { name: "Unity Bank Plc", code: "215" },
     { name: "Wema Bank", code: "035" },
     { name: "Zenith Bank", code: "057" },
+    // Digital banks
+    { name: "Kuda Bank", code: "090267" },
+    { name: "Opay", code: "090040" },
+    { name: "PalmPay", code: "090170" },
+    { name: "Moniepoint", code: "100032" },
+    { name: "FairMoney", code: "090107" },
     // Microfinance banks
     { name: "Accion Microfinance Bank", code: "120001" },
     { name: "Baobab Microfinance Bank", code: "090001" },
