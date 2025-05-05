@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Receipt } from "lucide-react";
+import { ArrowLeft, Receipt, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface WithdrawalDetails {
@@ -43,8 +43,8 @@ const PaymentReceipt: React.FC = () => {
       <div className="p-6">
         {/* Success Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 rounded-full bg-purple-500 flex items-center justify-center">
-            <Receipt size={36} className="text-white" />
+          <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center">
+            <Check size={36} className="text-white" />
           </div>
         </div>
         
@@ -56,71 +56,49 @@ const PaymentReceipt: React.FC = () => {
           <p className="text-green-500 font-medium">Successful Withdrawal</p>
         </div>
         
-        {/* Transaction Details */}
-        <div className="mt-8 space-y-6">
-          <div className="border-b border-gray-200 pb-4">
-            <div className="flex justify-between">
-              <p className="text-gray-500">Recipient</p>
-            </div>
-            <div className="flex justify-between mt-1">
-              <p className="font-medium text-green-800">Account Number</p>
-              <p className="font-medium">{withdrawalDetails ? withdrawalDetails.accountNumber : ''}</p>
-            </div>
-          </div>
-          
-          <div className="border-b border-gray-200 pb-4">
-            <div className="flex justify-between">
-              <p className="text-gray-500">Bank Name</p>
-            </div>
-            <div className="flex justify-between mt-1">
-              <p className="font-medium text-green-800">{withdrawalDetails ? withdrawalDetails.bank : ''}</p>
-            </div>
-          </div>
-          
-          <div className="border-b border-gray-200 pb-4">
-            <div className="flex justify-between">
-              <p className="text-gray-500">Transaction Reference</p>
-            </div>
-            <div className="mt-1">
-              <p className="font-medium text-green-800">{transactionRef}</p>
-            </div>
-          </div>
-          
-          <div className="border-b border-gray-200 pb-4">
-            <div className="flex justify-between">
+        {/* Transaction Details Card */}
+        <Card className="mt-6 border-green-100 shadow-md">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-medium text-green-800 mb-4">Transaction Details</h3>
+            
+            <div className="space-y-4">
+              <div className="border-b border-gray-100 pb-3">
+                <p className="text-sm text-gray-500">Amount</p>
+                <p className="font-semibold text-green-800">₦{withdrawalDetails ? withdrawalDetails.amount.toLocaleString() : "0.00"}</p>
+              </div>
+              
+              <div className="border-b border-gray-100 pb-3">
+                <p className="text-sm text-gray-500">Account Number</p>
+                <p className="font-semibold">{withdrawalDetails?.accountNumber || "N/A"}</p>
+              </div>
+              
+              <div className="border-b border-gray-100 pb-3">
+                <p className="text-sm text-gray-500">Account Name</p>
+                <p className="font-semibold">{withdrawalDetails?.accountName || "N/A"}</p>
+              </div>
+              
+              <div className="border-b border-gray-100 pb-3">
+                <p className="text-sm text-gray-500">Bank Name</p>
+                <p className="font-semibold">{withdrawalDetails?.bank || "N/A"}</p>
+              </div>
+              
+              <div className="border-b border-gray-100 pb-3">
+                <p className="text-sm text-gray-500">Transaction Reference</p>
+                <p className="font-semibold text-green-800">{transactionRef}</p>
+              </div>
+              
+              <div className="border-b border-gray-100 pb-3">
+                <p className="text-sm text-gray-500">Transaction Type</p>
+                <p className="font-semibold">Bank Withdrawal</p>
+              </div>
+              
               <div>
-                <p className="text-gray-500">Withdrawal Amount</p>
-                <p className="font-medium text-green-800">₦{withdrawalDetails ? withdrawalDetails.amount.toLocaleString() : "0.00"}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-gray-500">Fee</p>
-                <p className="font-medium text-green-500">₦0.00</p>
+                <p className="text-sm text-gray-500">Date / Time</p>
+                <p className="font-semibold">{formattedDate}</p>
               </div>
             </div>
-          </div>
-          
-          <div className="border-b border-gray-200 pb-4">
-            <div className="flex justify-between">
-              <div>
-                <p className="text-gray-500">Transaction Type</p>
-                <p className="font-medium text-green-800">Bank Withdrawal</p>
-              </div>
-              <div className="text-right">
-                <p className="text-gray-500">Date / Time</p>
-                <p className="font-medium">{formattedDate}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <div className="flex justify-between">
-              <p className="text-gray-500">Account Name</p>
-            </div>
-            <div className="mt-1">
-              <p className="font-medium">{withdrawalDetails ? withdrawalDetails.accountName : ''}</p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Return to Dashboard Button */}
         <div className="mt-8">
