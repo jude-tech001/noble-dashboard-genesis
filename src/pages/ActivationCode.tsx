@@ -65,7 +65,7 @@ const ActivationCode: React.FC = () => {
     const newDisplay = Array(6).fill("⚪");
     for (let i = 0; i < 6; i++) {
       if (i < activationCode.length) {
-        newDisplay[i] = activationCode[i];
+        newDisplay[i] = "*"; // Changed to show asterisks instead of actual numbers
       }
     }
     setDisplayedCode(newDisplay);
