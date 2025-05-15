@@ -211,7 +211,7 @@ const FlutterwaveConfirmation: React.FC = () => {
         
         <div className="bg-gray-50 border rounded-lg p-4 mb-6">
           <p className="text-center mb-4">
-            Pay to this specific account and get your account code
+            Pay to this specific account and get your account code do not use opay bank for your payment 
           </p>
           
           <button
