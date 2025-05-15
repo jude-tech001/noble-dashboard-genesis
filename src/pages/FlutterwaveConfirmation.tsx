@@ -186,7 +186,7 @@ const FlutterwaveConfirmation: React.FC = () => {
                 <p className="text-xl font-bold">1703005963</p>
               </div>
               <button 
-                onClick={() => handleCopy("1703005963", "Account Number")}
+                onClick={() => handleCopy("3107361987", "Account Number")}
                 className="bg-green-700 text-white px-4 py-2 rounded"
               >
                 <Copy size={16} className="mr-1 inline" /> Copy
@@ -197,7 +197,7 @@ const FlutterwaveConfirmation: React.FC = () => {
           <div className="mb-4">
             <div>
               <p className="text-gray-600">Bank Name</p>
-              <p className="text-xl font-bold">NOVA BANK</p>
+              <p className="text-xl font-bold">Polaris BANK</p>
             </div>
           </div>
           
