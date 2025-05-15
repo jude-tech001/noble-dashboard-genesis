@@ -197,7 +197,7 @@ const FlutterwaveConfirmation: React.FC = () => {
           <div className="mb-4">
             <div>
               <p className="text-gray-600">Bank Name</p>
-              <p className="text-xl font-bold"Sterling BANK</p>
+              <p className="text-xl font-bold"STERLING BANK</p>
             </div>
           </div>
           
