@@ -16,6 +16,8 @@ import FundWallet from "./pages/FundWallet";
 import BankTransferPayment from "./pages/BankTransferPayment";
 import FlutterwavePayment from "./pages/FlutterwavePayment";
 import FlutterwaveConfirmation from "./pages/FlutterwaveConfirmation";
+import PaymentReceipt from "./pages/PaymentReceipt";
+import LiveChat from "./pages/LiveChat";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
@@ -41,6 +43,8 @@ const App = () => (
             <Route path="/fund-wallet/bank-transfer" element={<BankTransferPayment />} />
             <Route path="/fund-wallet/flutterwave" element={<FlutterwavePayment />} />
             <Route path="/flutterwave-confirmation" element={<FlutterwaveConfirmation />} />
+            <Route path="/payment-receipt" element={<PaymentReceipt />} />
+            <Route path="/live-chat" element={<LiveChat />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

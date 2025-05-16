@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Gift, ArrowLeft, ArrowRight } from "lucide-react";
+import { Gift, ArrowLeft, ArrowRight, Users, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import Logo from "@/components/Logo";
 import BalanceCard from "@/components/BalanceCard";
@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Tabs,
@@ -28,6 +29,7 @@ const Dashboard: React.FC = () => {
   const { user, isAuthenticated, logout, updateUserInfo } = useAuth();
   const navigate = useNavigate();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showActivationMessage, setShowActivationMessage] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   
@@ -35,6 +37,18 @@ const Dashboard: React.FC = () => {
   const [giftClaimed, setGiftClaimed] = useState(() => {
     return localStorage.getItem("rewardClaimed") === "true";
   });
+  
+  // Last claim timestamp for 48-hour cooldown
+  const [lastClaimTime, setLastClaimTime] = useState(() => {
+    return parseInt(localStorage.getItem("lastClaimTime") || "0");
+  });
+  
+  // Check if cooldown has passed
+  const isCooldownOver = () => {
+    const now = Date.now();
+    const hoursPassed = (now - lastClaimTime) / (1000 * 60 * 60);
+    return hoursPassed >= 48;
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -42,43 +56,42 @@ const Dashboard: React.FC = () => {
     }
     
     // Check if this is a new user session and they have a previous balance
-    if (user && user.balance === 150000) {
+    if (user && user.balance === 150000 && !lastClaimTime) {
       // They already have the reward amount, mark as claimed
       setGiftClaimed(true);
       localStorage.setItem("rewardClaimed", "true");
+      setLastClaimTime(Date.now());
+      localStorage.setItem("lastClaimTime", Date.now().toString());
     }
-  }, [isAuthenticated, navigate, user]);
+  }, [isAuthenticated, navigate, user, lastClaimTime]);
 
   if (!user) {
     return null;
   }
-
-  const getTimeOfDay = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "morning";
-    if (hour < 18) return "afternoon";
-    return "evening";
-  };
 
   const handleMenuAction = (action: string) => {
     if (action === "withdraw") {
       navigate("/withdraw");
     } else if (action === "addFund") {
       navigate("/fund-wallet");
+    } else if (action === "buyAirtime" || action === "buyData") {
+      setShowActivationMessage(true);
     } else if (action === "transactions") {
       setActiveTab("transactions");
     } else if (action === "groups") {
       setActiveTab("groups");
     } else if (action === "support") {
       setActiveTab("support");
-    } else {
-      // In a real app, these would navigate to specific pages
-      console.log(`Action triggered: ${action}`);
     }
   };
 
   const handleGiftClick = () => {
-    if (!giftClaimed && !isProcessing) {
+    if (giftClaimed && !isCooldownOver()) {
+      toast.error("You can claim again after 48 hours!");
+      return;
+    }
+    
+    if (!isProcessing) {
       setIsProcessing(true);
       
       // Add a 4-second loading delay before adding balance
@@ -87,11 +100,14 @@ const Dashboard: React.FC = () => {
         updateUserInfo({ balance: 150000 });
         setGiftClaimed(true);
         localStorage.setItem("rewardClaimed", "true");
+        
+        // Set last claim time
+        setLastClaimTime(Date.now());
+        localStorage.setItem("lastClaimTime", Date.now().toString());
+        
         setIsProcessing(false);
         setShowSuccessModal(true);
       }, 4000);
-    } else if (giftClaimed) {
-      toast.error("Gift already claimed!");
     }
   };
 
@@ -99,14 +115,16 @@ const Dashboard: React.FC = () => {
     setShowSuccessModal(false);
   };
 
+  const handleCloseActivationMessage = () => {
+    setShowActivationMessage(false);
+    navigate("/fund-wallet");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-8">
-      <div className="px-4 py-6 bg-white">
+      <div className="px-4 py-4 bg-white">
         <div className="flex justify-between items-center">
           <Logo />
-          <h1 className="text-2xl font-bold">
-            Good {getTimeOfDay()}
-          </h1>
           <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
             <svg
               className="w-6 h-6 text-gray-600"
@@ -122,13 +140,6 @@ const Dashboard: React.FC = () => {
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
           </button>
-        </div>
-
-        <div className="mt-4">
-          <p className="text-lg mb-1">Hello!</p>
-          <p className="text-xl text-noble font-semibold">
-            {user.firstName}
-          </p>
         </div>
       </div>
 
@@ -178,17 +189,17 @@ const Dashboard: React.FC = () => {
                   <button 
                     onClick={handleGiftClick}
                     className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center relative"
-                    disabled={giftClaimed || isProcessing}
+                    disabled={isProcessing}
                   >
                     {isProcessing ? (
                       <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
                     ) : (
                       <Gift 
                         size={28} 
-                        className={`text-purple-600 ${giftClaimed ? 'opacity-50' : 'animate-pulse'}`}
+                        className={`text-purple-600 ${giftClaimed && !isCooldownOver() ? 'opacity-50' : 'animate-pulse'}`}
                       />
                     )}
-                    {!giftClaimed && !isProcessing && (
+                    {(!giftClaimed || isCooldownOver()) && !isProcessing && (
                       <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs font-bold">1</span>
                       </div>
@@ -196,9 +207,9 @@ const Dashboard: React.FC = () => {
                   </button>
                 </div>
 
-                {giftClaimed && (
+                {giftClaimed && !isCooldownOver() && (
                   <div className="text-center mt-2 text-sm text-gray-500">
-                    Reward already claimed
+                    Available again in 48 hours
                   </div>
                 )}
 
@@ -212,11 +223,11 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-10">
+              <div className="mt-6">
                 <NovaIdCard id={user.id || "33966608mlfp8gbwes4y"} />
               </div>
 
-              <div className="mt-10">
+              <div className="mt-6">
                 <h2 className="text-xl font-semibold">Quick Menu</h2>
                 
                 <div className="grid grid-cols-3 gap-6 mt-4">
@@ -259,7 +270,7 @@ const Dashboard: React.FC = () => {
                         <path d="M8 12h8" />
                       </svg>
                     }
-                    label="Add Fund"
+                    label="Buy Code"
                     onClick={() => handleMenuAction("addFund")}
                   />
                   
@@ -277,17 +288,13 @@ const Dashboard: React.FC = () => {
                   />
                   
                   <QuickMenuButton
-                    icon={
-                      <Users size={24} />
-                    }
+                    icon={<Users size={24} />}
                     label="Groups"
                     onClick={() => handleMenuAction("groups")}
                   />
                   
                   <QuickMenuButton
-                    icon={
-                      <MessageSquare size={24} />
-                    }
+                    icon={<MessageSquare size={24} />}
                     label="Support"
                     onClick={() => handleMenuAction("support")}
                   />
@@ -348,6 +355,31 @@ const Dashboard: React.FC = () => {
               className="bg-green-800 text-white px-12 py-3 rounded-md font-medium w-full"
             >
               OKAY
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Activation Required Modal */}
+      <Dialog open={showActivationMessage} onOpenChange={setShowActivationMessage}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="items-center text-center">
+            <div className="mx-auto w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mb-4">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-600">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <DialogTitle className="text-xl">Activation Required</DialogTitle>
+            <p className="text-center mt-4">Buy activation code to use this feature</p>
+          </DialogHeader>
+          <div className="flex justify-center mt-4">
+            <button 
+              onClick={handleCloseActivationMessage} 
+              className="bg-green-800 text-white px-12 py-3 rounded-md font-medium w-full"
+            >
+              Buy Activation Code
             </button>
           </div>
         </DialogContent>

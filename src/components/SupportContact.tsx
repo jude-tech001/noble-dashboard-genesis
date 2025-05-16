@@ -1,15 +1,17 @@
 
 import React from "react";
 import { Mail, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SupportContact: React.FC = () => {
+  const navigate = useNavigate();
+  
   const handleContactSupport = () => {
     window.location.href = "mailto:nobleearn001@gmail.com";
   };
   
   const handleOpenChat = () => {
-    // In a real app, this would open a chat interface
-    alert("Chat support feature coming soon!");
+    navigate("/live-chat");
   };
   
   return (
