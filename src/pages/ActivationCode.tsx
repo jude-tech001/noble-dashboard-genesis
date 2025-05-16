@@ -9,7 +9,8 @@ const ActivationCode: React.FC = () => {
   const navigate = useNavigate();
   const [activationCode, setActivationCode] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [displayedCode, setDisplayedCode] = useState<string[]>(Array(6).fill("⚪"));
+  const [displayedCode, setDisplayedCode] = useState<string[]>(["⚪", "⚪", "⚪", "⚪", "⚪", "⚪"]);
+  const validCode = "236589";
   
   // Add loading state when component mounts
   useEffect(() => {
@@ -23,23 +24,24 @@ const ActivationCode: React.FC = () => {
   const handleCodeComplete = (value: string) => {
     setActivationCode(value);
     
-    // Simulate code verification
+    // Check if code matches the valid code
     if (value.length === 6) {
-      setTimeout(() => {
+      if (value === validCode) {
         toast.success("Withdrawal request successful");
         navigate("/dashboard");
-      }, 1000);
+      } else {
+        toast.error("Invalid activation code");
+        setActivationCode("");
+      }
     }
   };
 
   // Update displayed code when activation code changes
   useEffect(() => {
-    const newDisplay = [...displayedCode];
+    const newDisplay = Array(6).fill("⚪");
     for (let i = 0; i < 6; i++) {
       if (i < activationCode.length) {
         newDisplay[i] = activationCode[i];
-      } else {
-        newDisplay[i] = "⚪";
       }
     }
     setDisplayedCode(newDisplay);
