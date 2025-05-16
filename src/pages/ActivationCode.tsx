@@ -20,7 +20,7 @@ const ActivationCode: React.FC = () => {
   const [withdrawalDetails, setWithdrawalDetails] = useState<any>(null);
   const [displayedCode, setDisplayedCode] = useState<string[]>(["⚪", "⚪", "⚪", "⚪", "⚪", "⚪"]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const validCode = "256980";
+  const validCode = "236589";
   
   // Get withdrawal details from sessionStorage
   useEffect(() => {
