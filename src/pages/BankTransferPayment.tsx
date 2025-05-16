@@ -22,7 +22,7 @@ const BankTransferPayment: React.FC = () => {
   const accountDetails = {
     bankName: STERLING BANK",
     accountNumber: "01108697498",
-    accountName: "Jude Samuel",
+    accountName: "JUDE SAMUEL",
     amount: "₦6,200"
   };
   
