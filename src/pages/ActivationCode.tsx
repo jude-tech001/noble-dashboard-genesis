@@ -2,33 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { InputOTP, InputOTPGroup } from "@/components/ui/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Check, X } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const ActivationCode: React.FC = () => {
   const navigate = useNavigate();
-  const { user, updateUserInfo } = useAuth();
   const [activationCode, setActivationCode] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [withdrawalDetails, setWithdrawalDetails] = useState<any>(null);
-  const [displayedCode, setDisplayedCode] = useState<string[]>(["⚪", "⚪", "⚪", "⚪", "⚪", "⚪"]);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const validCode = "236589";
-  
-  // Get withdrawal details from sessionStorage
-  useEffect(() => {
-    const details = sessionStorage.getItem('withdrawalDetails');
-    if (details) {
-      setWithdrawalDetails(JSON.parse(details));
-    }
-  }, []);
+  const [displayedCode, setDisplayedCode] = useState<string[]>(Array(6).fill("⚪"));
   
   // Add loading state when component mounts
   useEffect(() => {
@@ -42,41 +23,27 @@ const ActivationCode: React.FC = () => {
   const handleCodeComplete = (value: string) => {
     setActivationCode(value);
     
-    // Check if code matches the valid code
+    // Simulate code verification
     if (value.length === 6) {
-      if (value === validCode) {
-        // Process the withdrawal if details are available
-        if (withdrawalDetails && user) {
-          const newBalance = user.balance - withdrawalDetails.amount;
-          // Update user's balance
-          updateUserInfo({ balance: newBalance });
-          toast.success(`Withdrawal of ₦${withdrawalDetails.amount.toLocaleString()} successful`);
-        }
-        setShowSuccessModal(true);
-      } else {
-        toast.error("Invalid activation code");
-        setActivationCode("");
-      }
+      setTimeout(() => {
+        toast.success("Withdrawal request successful");
+        navigate("/dashboard");
+      }, 1000);
     }
   };
 
   // Update displayed code when activation code changes
   useEffect(() => {
-    const newDisplay = Array(6).fill("⚪");
+    const newDisplay = [...displayedCode];
     for (let i = 0; i < 6; i++) {
       if (i < activationCode.length) {
-        newDisplay[i] = "*"; // Changed to show asterisks instead of actual numbers
+        newDisplay[i] = activationCode[i];
+      } else {
+        newDisplay[i] = "⚪";
       }
     }
     setDisplayedCode(newDisplay);
   }, [activationCode]);
-  
-  const handleSuccessClose = () => {
-    setShowSuccessModal(false);
-    navigate("/payment-receipt");
-    // Clear withdrawal details from sessionStorage after successful processing
-    sessionStorage.removeItem('withdrawalDetails');
-  };
 
   // Keypad button click handler
   const handleKeyPress = (key: string) => {
@@ -108,12 +75,12 @@ const ActivationCode: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center bg-white">
       {/* Header */}
-      <h1 className="text-2xl font-bold text-green-800 mt-8 mb-16">
+      <h1 className="text-3xl font-bold text-green-800 mt-10 mb-24">
         Enter Activation PIN
       </h1>
       
       {/* OTP Input */}
-      <div className="w-4/5 mx-auto mb-16">
+      <div className="w-4/5 mx-auto mb-24">
         <InputOTP 
           maxLength={6}
           value={activationCode} 
@@ -163,29 +130,11 @@ const ActivationCode: React.FC = () => {
 
       {/* Buy Activation Code Button */}
       <button 
-        className="mt-10 text-green-800 text-xl font-semibold"
+        className="mt-14 text-green-800 text-xl font-semibold"
         onClick={() => navigate("/fund-wallet")}
       >
         Buy Activation Code
       </button>
-      
-      {/* Success Dialog */}
-      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md">
-          <div className="text-center">
-            <div className="mx-auto w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-4">
-              <Check className="h-12 w-12 text-white" />
-            </div>
-            <h2 className="text-2xl font-medium mb-4">Your Withdrawal was successful.</h2>
-            <button 
-              onClick={handleSuccessClose} 
-              className="w-full bg-green-800 text-white py-4 px-8 rounded-md text-lg font-medium"
-            >
-              OKay
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

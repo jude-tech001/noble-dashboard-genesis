@@ -2,62 +2,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "@/components/BackButton";
-import { toast } from "sonner";
 
 const SignupStep1: React.FC = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [firstNameError, setFirstNameError] = useState("");
-  const [lastNameError, setLastNameError] = useState("");
   const navigate = useNavigate();
-
-  const validateFirstName = (name: string): boolean => {
-    if (!name.trim()) {
-      setFirstNameError("First name is required");
-      return false;
-    }
-    
-    if (name.trim().length < 2) {
-      setFirstNameError("First name must be at least 2 characters");
-      return false;
-    }
-    
-    if (!/^[a-zA-Z\s]+$/.test(name)) {
-      setFirstNameError("First name should contain only letters");
-      return false;
-    }
-    
-    setFirstNameError("");
-    return true;
-  };
-  
-  const validateLastName = (name: string): boolean => {
-    if (!name.trim()) {
-      setLastNameError("Last name is required");
-      return false;
-    }
-    
-    if (name.trim().length < 2) {
-      setLastNameError("Last name must be at least 2 characters");
-      return false;
-    }
-    
-    if (!/^[a-zA-Z\s]+$/.test(name)) {
-      setLastNameError("Last name should contain only letters");
-      return false;
-    }
-    
-    setLastNameError("");
-    return true;
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const isFirstNameValid = validateFirstName(firstName);
-    const isLastNameValid = validateLastName(lastName);
-    
-    if (!isFirstNameValid || !isLastNameValid) {
+    // Basic validation
+    if (!firstName.trim() || !lastName.trim()) {
       return;
     }
     
@@ -88,15 +43,11 @@ const SignupStep1: React.FC = () => {
               id="firstName"
               type="text"
               value={firstName}
-              onChange={(e) => {
-                setFirstName(e.target.value);
-                if (firstNameError) validateFirstName(e.target.value);
-              }}
-              className={`noble-input ${firstNameError ? "border-red-500" : ""}`}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="noble-input"
               placeholder="Enter your first name"
               required
             />
-            {firstNameError && <p className="text-red-500 text-sm mt-1">{firstNameError}</p>}
           </div>
           
           <div>
@@ -107,15 +58,11 @@ const SignupStep1: React.FC = () => {
               id="lastName"
               type="text"
               value={lastName}
-              onChange={(e) => {
-                setLastName(e.target.value);
-                if (lastNameError) validateLastName(e.target.value);
-              }}
-              className={`noble-input ${lastNameError ? "border-red-500" : ""}`}
+              onChange={(e) => setLastName(e.target.value)}
+              className="noble-input"
               placeholder="Enter your last name"
               required
             />
-            {lastNameError && <p className="text-red-500 text-sm mt-1">{lastNameError}</p>}
           </div>
           
           <button 

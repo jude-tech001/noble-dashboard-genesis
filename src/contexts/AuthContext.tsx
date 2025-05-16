@@ -53,21 +53,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Check if we have a saved balance for this email
-      const savedUserData = localStorage.getItem(`user_data_${email}`);
-      let balance = 0;
-      
-      if (savedUserData) {
-        const parsedData = JSON.parse(savedUserData);
-        balance = parsedData.balance || 0;
-      }
-      
       const newUser: User = {
         id: Math.random().toString(36).substr(2, 9),
         firstName,
         lastName,
         email,
-        balance,
+        balance: 0,
         isActivated: false
       };
       
@@ -90,25 +81,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Check if we have a saved balance for this email
-      const savedUserData = localStorage.getItem(`user_data_${email}`);
-      let balance = 0;
-      const rewardClaimed = localStorage.getItem("rewardClaimed") === "true";
-      
-      // If reward was claimed previously, set balance to reward amount
-      if (rewardClaimed) {
-        balance = savedUserData ? JSON.parse(savedUserData).balance || 150000 : 150000;
-      } else if (savedUserData) {
-        balance = JSON.parse(savedUserData).balance || 0;
-      }
-      
       // For demo purposes
       const mockUser: User = {
         id: Math.random().toString(36).substr(2, 9),
         firstName: "John",
         lastName: "Doe",
         email,
-        balance,
+        balance: 0,
         isActivated: false
       };
       
@@ -124,15 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    // Save user data before logout to preserve balance
-    if (user) {
-      localStorage.setItem(`user_data_${user.email}`, JSON.stringify({
-        balance: user.balance,
-        isActivated: user.isActivated
-      }));
-    }
-    
-    // Don't remove rewardClaimed flag or user data
     localStorage.removeItem("noble_user");
     setUser(null);
     navigate("/");
@@ -141,14 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateUserInfo = (data: Partial<User>) => {
     if (user) {
-      const updatedUser = { ...user, ...data };
-      setUser(updatedUser);
-      
-      // Save updated balance and other user data
-      localStorage.setItem(`user_data_${user.email}`, JSON.stringify({
-        balance: updatedUser.balance,
-        isActivated: updatedUser.isActivated
-      }));
+      setUser({ ...user, ...data });
     }
   };
 

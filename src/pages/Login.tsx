@@ -4,57 +4,15 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import PasswordInput from "@/components/PasswordInput";
 import Logo from "@/components/Logo";
-import { toast } from "sonner";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
   const { login, isLoading } = useAuth();
 
-  const validateEmail = (email: string): boolean => {
-    if (!email) {
-      setEmailError("Email is required");
-      return false;
-    }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError("Please enter a valid email address");
-      return false;
-    }
-    
-    setEmailError("");
-    return true;
-  };
-  
-  const validatePassword = (password: string): boolean => {
-    if (!password) {
-      setPasswordError("Password is required");
-      return false;
-    }
-    
-    if (password.length < 6) {
-      setPasswordError("Password must be at least 6 characters");
-      return false;
-    }
-    
-    setPasswordError("");
-    return true;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-    
-    if (!isEmailValid || !isPasswordValid) {
-      return;
-    }
-    
     try {
       await login(email, password);
     } catch (error) {
@@ -80,15 +38,11 @@ const Login: React.FC = () => {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (emailError) validateEmail(e.target.value);
-              }}
-              className={`noble-input ${emailError ? "border-red-500" : ""}`}
+              onChange={(e) => setEmail(e.target.value)}
+              className="noble-input"
               placeholder="Enter your email"
               required
             />
-            {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
           </div>
           
           <div>
@@ -97,14 +51,9 @@ const Login: React.FC = () => {
             </label>
             <PasswordInput
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (passwordError) validatePassword(e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className={passwordError ? "border-red-500" : ""}
             />
-            {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
           </div>
           
           <div className="pt-4">

@@ -31,10 +31,7 @@ const FlutterwavePayment: React.FC = () => {
     
     setIsSubmitting(true);
     
-    // Store user info for the confirmation page
-    sessionStorage.setItem("flutterwave_user", JSON.stringify({ fullName, email }));
-    
-    // Navigate to confirmation page
+    // Simulate payment processing delay
     setTimeout(() => {
       navigate("/flutterwave-confirmation");
       setIsSubmitting(false);
@@ -42,13 +39,13 @@ const FlutterwavePayment: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen bg-green-800 p-4">
+    <div className="min-h-screen bg-[#2a2f5b] p-4">
       <div className="mb-8">
         <div className="flex items-center">
           <button onClick={handleBack} className="mr-4">
             <ArrowLeft size={24} className="text-white" />
           </button>
-          <h1 className="text-3xl font-bold text-white">NOBLE EARN</h1>
+          <h1 className="text-3xl font-bold text-white">BluePay</h1>
         </div>
       </div>
       
@@ -96,7 +93,7 @@ const FlutterwavePayment: React.FC = () => {
           
           <button 
             type="submit"
-            className="w-full bg-green-800 text-white text-xl py-4 rounded-lg font-medium"
+            className="w-full bg-[#2a2f5b] text-white text-xl py-4 rounded-lg font-medium"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Processing..." : "Pay"}
