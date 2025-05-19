@@ -183,10 +183,10 @@ const FlutterwaveConfirmation: React.FC = () => {
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-gray-600">Account Number</p>
-                <p className="text-xl font-bold">1703005963</p>
+                <p className="text-xl font-bold">0118697498</p>
               </div>
               <button 
-                onClick={() => handleCopy("1703005963", "Account Number")}
+                onClick={() => handleCopy("0118697498", "Account Number")}
                 className="bg-green-700 text-white px-4 py-2 rounded"
               >
                 <Copy size={16} className="mr-1 inline" /> Copy
@@ -197,7 +197,7 @@ const FlutterwaveConfirmation: React.FC = () => {
           <div className="mb-4">
             <div>
               <p className="text-gray-600">Bank Name</p>
-              <p className="text-xl font-bold">NOVA BANK</p>
+              <p className="text-xl font-bold">Sterling Bank</p>
             </div>
           </div>
           
@@ -211,7 +211,7 @@ const FlutterwaveConfirmation: React.FC = () => {
         
         <div className="bg-gray-50 border rounded-lg p-4 mb-6">
           <p className="text-center mb-4">
-            Pay to this specific account and get your account code
+            Pay to this specific account and get your account code don't use opay bank for this payment 
           </p>
           
           <button
