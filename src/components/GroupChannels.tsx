@@ -23,7 +23,7 @@ const groupChannels: GroupChannel[] = [
     name: "WhatsApp Group",
     members: 1752,
     description: "Join our WhatsApp community for instant support",
-    link: "https://chat.whatsapp.com/EOfgJsm8fyW1btAgrjkvhW"
+    link: "https://chat.whatsapp.com/IfY7FRuHLh2AhO3XTyFgGy"
   }
 ];
 
