@@ -18,6 +18,8 @@ import FlutterwavePayment from "./pages/FlutterwavePayment";
 import FlutterwaveConfirmation from "./pages/FlutterwaveConfirmation";
 import PaymentReceipt from "./pages/PaymentReceipt";
 import LiveChat from "./pages/LiveChat";
+import ActivateAccount from "./pages/ActivateAccount";
+import BuyActivationCode from "./pages/BuyActivationCode";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
@@ -39,6 +41,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/withdraw" element={<Withdraw />} />
             <Route path="/withdraw/activation" element={<ActivationCode />} />
+            <Route path="/activate-account" element={<ActivateAccount />} />
+            <Route path="/buy-activation-code" element={<BuyActivationCode />} />
             <Route path="/fund-wallet" element={<FundWallet />} />
             <Route path="/fund-wallet/bank-transfer" element={<BankTransferPayment />} />
             <Route path="/fund-wallet/flutterwave" element={<FlutterwavePayment />} />

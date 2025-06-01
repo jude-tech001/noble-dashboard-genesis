@@ -12,44 +12,27 @@ interface Transaction {
   status: "completed" | "pending" | "failed";
 }
 
-// Sample transaction data
-const sampleTransactions: Transaction[] = [
-  {
-    id: "tr-001",
-    type: "credit",
-    amount: 150000,
-    date: "2023-05-01",
-    description: "Claim Reward",
-    status: "completed"
-  },
-  {
-    id: "tr-002",
-    type: "debit",
-    amount: 25000,
-    date: "2023-04-30",
-    description: "Withdrawal to GTB",
-    status: "completed"
-  },
-  {
-    id: "tr-003",
-    type: "credit",
-    amount: 6200,
-    date: "2023-04-28",
-    description: "Fund via Bank Transfer",
-    status: "completed"
-  }
-];
-
 const TransactionHistory: React.FC = () => {
   const { user } = useAuth();
   
-  // In a real app, this would come from an API call or context
-  const transactions = sampleTransactions;
+  // Check if user has claimed the reward to show welcome bonus transaction
+  const rewardClaimed = localStorage.getItem("rewardClaimed") === "true";
+  
+  const transactions: Transaction[] = rewardClaimed ? [
+    {
+      id: "tr-001",
+      type: "credit",
+      amount: 150000,
+      date: new Date().toISOString().split('T')[0],
+      description: "Welcome Bonus",
+      status: "completed"
+    }
+  ] : [];
   
   if (transactions.length === 0) {
     return (
       <div className="p-4 text-center">
-        <p className="text-gray-500">No transaction history available</p>
+        <p className="text-gray-500">No transaction yet</p>
       </div>
     );
   }

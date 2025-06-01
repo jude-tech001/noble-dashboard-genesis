@@ -58,6 +58,8 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
     } catch (error) {
+      // Show custom error message for users not signed up
+      toast.error("Incorrect details. Sign up now");
       console.error("Login error:", error);
     }
   };
