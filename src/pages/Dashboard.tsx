@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import BalanceCard from "@/components/BalanceCard";
-import NovaIdCard from "@/components/NovaIdCard";
 import DashboardHeader from "@/components/DashboardHeader";
 import GiftBox from "@/components/GiftBox";
 import DashboardQuickMenu from "@/components/DashboardQuickMenu";
@@ -119,10 +118,6 @@ const Dashboard: React.FC = () => {
             >
               Withdraw
             </button>
-          </div>
-
-          <div className="mt-6">
-            <NovaIdCard id={user.id || "33966608mlfp8gbwes4y"} />
           </div>
 
           <DashboardQuickMenu onMenuAction={handleMenuAction} />

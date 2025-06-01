@@ -67,7 +67,7 @@ const BankTransferPayment: React.FC = () => {
   };
 
   const handlePaymentConfirmation = () => {
-    // Show processing dialog
+    // Show processing dialog with circle loading
     setShowProcessingDialog(true);
     setButtonText("Pending....");
     
@@ -195,13 +195,13 @@ const BankTransferPayment: React.FC = () => {
         )}
       </div>
 
-      {/* Processing Dialog */}
+      {/* Processing Dialog with Circle Loading */}
       <Dialog open={showProcessingDialog} onOpenChange={setShowProcessingDialog}>
         <DialogContent className="sm:max-w-md p-0 gap-0">
           <div className="p-6">
             <h2 className="text-xl font-bold text-center mb-6">Payment Processing</h2>
-            <div className="flex items-center justify-center">
-              <div className="w-2 h-2 bg-green-800 rounded-full mr-1 animate-pulse"></div>
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-16 h-16 border-4 border-green-800 border-t-transparent rounded-full animate-spin mb-4"></div>
               <p className="text-gray-500">Checking For Payment</p>
             </div>
           </div>
