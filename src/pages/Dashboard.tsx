@@ -9,7 +9,6 @@ import GiftBox from "@/components/GiftBox";
 import DashboardQuickMenu from "@/components/DashboardQuickMenu";
 import DashboardTabs from "@/components/DashboardTabs";
 import DashboardModals from "@/components/DashboardModals";
-import ActivateAccountButton from "@/components/ActivateAccountButton";
 
 const Dashboard: React.FC = () => {
   const { user, isAuthenticated, updateUserInfo } = useAuth();
@@ -55,6 +54,8 @@ const Dashboard: React.FC = () => {
       navigate("/fund-wallet");
     } else if (action === "buyAirtime" || action === "buyData") {
       setShowActivationMessage(true);
+    } else if (action === "activateAccount") {
+      navigate("/activate-account");
     } else if (action === "transactions") {
       setActiveTab("transactions");
     } else if (action === "groups") {
@@ -119,8 +120,6 @@ const Dashboard: React.FC = () => {
               Withdraw
             </button>
           </div>
-
-          <ActivateAccountButton />
 
           <div className="mt-6">
             <NovaIdCard id={user.id || "33966608mlfp8gbwes4y"} />

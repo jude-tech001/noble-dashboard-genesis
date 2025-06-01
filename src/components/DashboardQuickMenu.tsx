@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Users, MessageSquare } from "lucide-react";
+import { Users, MessageSquare, UserCheck } from "lucide-react";
 import QuickMenuButton from "@/components/QuickMenuButton";
 
 interface DashboardQuickMenuProps {
@@ -54,6 +54,12 @@ const DashboardQuickMenu: React.FC<DashboardQuickMenuProps> = ({ onMenuAction })
           }
           label="Buy Code"
           onClick={() => onMenuAction("addFund")}
+        />
+        
+        <QuickMenuButton
+          icon={<UserCheck size={24} />}
+          label="Activate Account"
+          onClick={() => onMenuAction("activateAccount")}
         />
         
         <QuickMenuButton

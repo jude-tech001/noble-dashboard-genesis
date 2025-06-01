@@ -1,5 +1,6 @@
 
 import React from "react";
+import { toast } from "sonner";
 
 interface NovaIdCardProps {
   id: string;
@@ -8,10 +9,11 @@ interface NovaIdCardProps {
 const NovaIdCard: React.FC<NovaIdCardProps> = ({ id }) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(id);
+    toast.success("NOVA ID copied to clipboard!");
   };
 
   return (
-    <div className="bg-noble-light rounded-lg p-4">
+    <div className="bg-noble-light rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={copyToClipboard}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <svg 
@@ -30,7 +32,7 @@ const NovaIdCard: React.FC<NovaIdCardProps> = ({ id }) => {
           </svg>
           <span className="font-medium text-noble">NOVA ID</span>
         </div>
-        <button onClick={copyToClipboard} className="text-noble">
+        <button onClick={(e) => { e.stopPropagation(); copyToClipboard(); }} className="text-noble">
           <svg 
             className="w-6 h-6" 
             xmlns="http://www.w3.org/2000/svg"
@@ -47,6 +49,7 @@ const NovaIdCard: React.FC<NovaIdCardProps> = ({ id }) => {
         </button>
       </div>
       <p className="text-gray-700 mt-2 text-sm">{id}</p>
+      <p className="text-xs text-gray-500 mt-1">Tap to copy</p>
     </div>
   );
 };
