@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,14 +7,30 @@ import { useAuth } from "@/contexts/AuthContext";
 const BuyActivationCode: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const handleBack = () => {
     navigate("/activate-account");
   };
 
   const handleProceedToPayment = () => {
-    navigate("/fund-wallet");
+    setIsVerifying(true);
+    
+    // Show loading for 3 seconds then navigate
+    setTimeout(() => {
+      setIsVerifying(false);
+      navigate("/fund-wallet");
+    }, 3000);
   };
+
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="w-16 h-16 border-4 border-green-800 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-lg text-green-800 font-medium">Verifying payment...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
