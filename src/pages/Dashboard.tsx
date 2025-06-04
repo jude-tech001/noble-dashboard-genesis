@@ -137,7 +137,7 @@ const Dashboard: React.FC = () => {
             </button>
             <button 
               onClick={handleDownloadApp}
-              className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium text-sm flex items-center space-x-2"
+              className="bg-green-600 text-white px-6 py-2 rounded-full font-medium text-sm flex items-center space-x-2"
             >
               <Download size={16} />
               <span>Download App</span>
