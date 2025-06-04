@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Users, MessageSquare, UserCheck, Download } from "lucide-react";
+import { Users, MessageSquare, UserCheck } from "lucide-react";
 import QuickMenuButton from "@/components/QuickMenuButton";
 
 interface DashboardQuickMenuProps {
@@ -8,10 +8,6 @@ interface DashboardQuickMenuProps {
 }
 
 const DashboardQuickMenu: React.FC<DashboardQuickMenuProps> = ({ onMenuAction }) => {
-  const handleDownloadApp = () => {
-    window.open("https://median.co/share/djkaar#apk", "_blank");
-  };
-
   return (
     <div className="mt-6">
       <h2 className="text-xl font-semibold">Quick Menu</h2>
@@ -61,9 +57,9 @@ const DashboardQuickMenu: React.FC<DashboardQuickMenuProps> = ({ onMenuAction })
         />
         
         <QuickMenuButton
-          icon={<Download size={24} />}
-          label="Download App"
-          onClick={handleDownloadApp}
+          icon={<UserCheck size={24} />}
+          label="Activate Account"
+          onClick={() => onMenuAction("activateAccount")}
         />
         
         <QuickMenuButton
