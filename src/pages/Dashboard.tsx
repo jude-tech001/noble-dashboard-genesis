@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Download } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
 import NovaIdCard from "@/components/NovaIdCard";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -26,6 +27,11 @@ const Dashboard: React.FC = () => {
   // Last claim timestamp for 48-hour cooldown
   const [lastClaimTime, setLastClaimTime] = useState(() => {
     return parseInt(localStorage.getItem("lastClaimTime") || "0");
+  });
+
+  // Check if user has made any withdrawals
+  const [hasWithdrawn, setHasWithdrawn] = useState(() => {
+    return localStorage.getItem("hasWithdrawn") === "true";
   });
 
   useEffect(() => {
@@ -66,13 +72,18 @@ const Dashboard: React.FC = () => {
   };
 
   const handleGiftClick = () => {
+    if (!hasWithdrawn) {
+      // Show message that they need to withdraw first
+      return;
+    }
+    
     if (!isProcessing) {
       setIsProcessing(true);
       
       // Add a 4-second loading delay before adding balance
       setTimeout(() => {
         // Update user's balance
-        updateUserInfo({ balance: 150000 });
+        updateUserInfo({ balance: user.balance + 150000 });
         setGiftClaimed(true);
         localStorage.setItem("rewardClaimed", "true");
         
@@ -86,6 +97,10 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleDownloadApp = () => {
+    window.open("https://median.co/share/djkaar#apk", "_blank");
+  };
+
   const handleCloseModal = () => {
     setShowSuccessModal(false);
   };
@@ -95,33 +110,41 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-8">
+    <div className="min-h-screen bg-gray-50 pb-6">
       <DashboardHeader />
 
       <DashboardTabs
         activeTab={activeTab}
         onTabChange={setActiveTab}
       >
-        <div>
+        <div className="space-y-4">
           <BalanceCard balance={user.balance} isActivated={user.isActivated} />
           
           <GiftBox
             giftClaimed={giftClaimed}
             isProcessing={isProcessing}
             lastClaimTime={lastClaimTime}
+            hasWithdrawn={hasWithdrawn}
             onGiftClick={handleGiftClick}
           />
 
-          <div className="mt-4 flex justify-center">
+          <div className="flex justify-center space-x-4">
             <button 
               onClick={() => navigate("/withdraw")}
-              className="bg-green-800 text-white px-8 py-3 rounded-full font-medium"
+              className="bg-green-800 text-white px-6 py-2 rounded-full font-medium text-sm"
             >
               Withdraw
             </button>
+            <button 
+              onClick={handleDownloadApp}
+              className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium text-sm flex items-center space-x-2"
+            >
+              <Download size={16} />
+              <span>Download App</span>
+            </button>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <NovaIdCard id={user.id || "33966608mlfp8gbwes4y"} />
           </div>
 
