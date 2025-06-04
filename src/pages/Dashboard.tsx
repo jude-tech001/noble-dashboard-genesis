@@ -130,17 +130,17 @@ const Dashboard: React.FC = () => {
 
           <div className="flex justify-center space-x-4">
             <button 
+              onClick={() => navigate("/withdraw")}
+              className="bg-green-800 text-white px-6 py-2 rounded-full font-medium text-sm"
+            >
+              Withdraw
+            </button>
+            <button 
               onClick={() => navigate("/activate-account")}
               className="bg-green-800 text-white px-6 py-2 rounded-full font-medium text-sm flex items-center space-x-2"
             >
               <Download size={16} />
               <span>Activate Account</span>
-            </button>
-            <button 
-              onClick={() => navigate("/withdraw")}
-              className="bg-green-800 text-white px-6 py-2 rounded-full font-medium text-sm"
-            >
-              Withdraw
             </button>
           </div>
 
