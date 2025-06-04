@@ -136,11 +136,11 @@ const Dashboard: React.FC = () => {
               Withdraw
             </button>
             <button 
-              onClick={handleDownloadApp}
+              onClick={() => navigate("/activate-account")}
               className="bg-green-600 text-white px-6 py-2 rounded-full font-medium text-sm flex items-center space-x-2"
             >
               <Download size={16} />
-              <span>Download App</span>
+              <span>Activate Account</span>
             </button>
           </div>
 
