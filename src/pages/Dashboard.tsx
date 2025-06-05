@@ -72,11 +72,6 @@ const Dashboard: React.FC = () => {
   };
 
   const handleGiftClick = () => {
-    if (!hasWithdrawn) {
-      // Show message that they need to withdraw first
-      return;
-    }
-    
     if (!isProcessing) {
       setIsProcessing(true);
       
@@ -124,7 +119,7 @@ const Dashboard: React.FC = () => {
             giftClaimed={giftClaimed}
             isProcessing={isProcessing}
             lastClaimTime={lastClaimTime}
-            hasWithdrawn={hasWithdrawn}
+            hasWithdrawn={true}
             onGiftClick={handleGiftClick}
           />
 

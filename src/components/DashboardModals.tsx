@@ -25,7 +25,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
 
   const handleCloseActivationMessage = () => {
     onCloseActivationMessage();
-    navigate("/fund-wallet");
+    navigate("/activate-account");
   };
 
   return (
@@ -67,14 +67,14 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
               </svg>
             </div>
             <DialogTitle className="text-xl">Activation Required</DialogTitle>
-            <p className="text-center mt-4">Buy activation code to use this feature</p>
+            <p className="text-center mt-4">Activate your account to use this feature</p>
           </DialogHeader>
           <div className="flex justify-center mt-4">
             <button 
               onClick={handleCloseActivationMessage} 
               className="bg-green-800 text-white px-12 py-3 rounded-md font-medium w-full"
             >
-              Buy Activation Code
+              Activate Account
             </button>
           </div>
         </DialogContent>

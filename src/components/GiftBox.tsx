@@ -25,11 +25,6 @@ const GiftBox: React.FC<GiftBoxProps> = ({
   };
 
   const handleGiftClick = () => {
-    if (!hasWithdrawn) {
-      toast.error("Complete your first withdrawal to unlock rewards!");
-      return;
-    }
-    
     if (giftClaimed && !isCooldownOver()) {
       toast.error("You can claim again after 48 hours!");
       return;
@@ -37,7 +32,7 @@ const GiftBox: React.FC<GiftBoxProps> = ({
     onGiftClick();
   };
 
-  const canClaim = hasWithdrawn && (!giftClaimed || isCooldownOver());
+  const canClaim = (!giftClaimed || isCooldownOver());
 
   return (
     <div className="mt-4">
@@ -63,13 +58,7 @@ const GiftBox: React.FC<GiftBoxProps> = ({
         </button>
       </div>
 
-      {!hasWithdrawn && (
-        <div className="text-center mt-2 text-xs text-gray-500">
-          Complete first withdrawal to unlock
-        </div>
-      )}
-
-      {hasWithdrawn && giftClaimed && !isCooldownOver() && (
+      {giftClaimed && !isCooldownOver() && (
         <div className="text-center mt-2 text-xs text-gray-500">
           Available again in 48 hours
         </div>
