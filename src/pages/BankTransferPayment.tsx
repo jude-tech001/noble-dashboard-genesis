@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
+import OpayWarningModal from "@/components/OpayWarningModal";
 
 const BankTransferPayment: React.FC = () => {
   const navigate = useNavigate();
@@ -16,11 +17,12 @@ const BankTransferPayment: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(1800); // 30 mins in seconds
   const [showProcessingDialog, setShowProcessingDialog] = useState(false);
   const [showFailureDialog, setShowFailureDialog] = useState(false);
+  const [showOpayWarning, setShowOpayWarning] = useState(true);
   const [buttonText, setButtonText] = useState("I Have Made Payment");
   
   const accountDetails = {
-    bankName: "Stella MFB",
-    accountNumber: "1100892582",
+    bankName: "FCMB Bank",
+    accountNumber: "1030512463",
     accountName: "SAMUEL JUDE",
     amount: "₦6,200"
   };
@@ -84,6 +86,12 @@ const BankTransferPayment: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Opay Warning Modal */}
+      <OpayWarningModal 
+        isOpen={showOpayWarning} 
+        onClose={() => setShowOpayWarning(false)} 
+      />
+
       {/* Header - Slightly smaller */}
       <div className="flex items-center p-2 border-b">
         <button onClick={handleBack} className="mr-2">

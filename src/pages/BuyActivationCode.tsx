@@ -1,13 +1,14 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import OpayWarningModal from "@/components/OpayWarningModal";
 
 const BuyActivationCode: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isVerifying, setIsVerifying] = useState(false);
+  const [showOpayWarning, setShowOpayWarning] = useState(true);
 
   const handleBack = () => {
     navigate("/activate-account");
@@ -34,6 +35,11 @@ const BuyActivationCode: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <OpayWarningModal 
+        isOpen={showOpayWarning} 
+        onClose={() => setShowOpayWarning(false)} 
+      />
+      
       <div className="flex items-center p-4 border-b">
         <button onClick={handleBack} className="mr-3">
           <ArrowLeft size={20} className="text-green-800" />
