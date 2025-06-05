@@ -5,14 +5,12 @@ import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import OpayWarningModal from "@/components/OpayWarningModal";
 
 const FlutterwavePayment: React.FC = () => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showOpayWarning, setShowOpayWarning] = useState(true);
   
   const handleBack = () => {
     navigate(-1);
@@ -45,11 +43,6 @@ const FlutterwavePayment: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-green-800 p-4">
-      <OpayWarningModal 
-        isOpen={showOpayWarning} 
-        onClose={() => setShowOpayWarning(false)} 
-      />
-      
       <div className="mb-8">
         <div className="flex items-center">
           <button onClick={handleBack} className="mr-4">

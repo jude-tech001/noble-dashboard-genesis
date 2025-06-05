@@ -17,7 +17,7 @@ const BankTransferPayment: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(1800); // 30 mins in seconds
   const [showProcessingDialog, setShowProcessingDialog] = useState(false);
   const [showFailureDialog, setShowFailureDialog] = useState(false);
-  const [showOpayWarning, setShowOpayWarning] = useState(true);
+  const [showOpayWarning, setShowOpayWarning] = useState(false);
   const [buttonText, setButtonText] = useState("I Have Made Payment");
   
   const accountDetails = {
@@ -31,6 +31,8 @@ const BankTransferPayment: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
+      // Show Opay warning after loading is complete
+      setShowOpayWarning(true);
     }, 2000);
     
     return () => clearTimeout(timer);
@@ -86,7 +88,7 @@ const BankTransferPayment: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Opay Warning Modal */}
+      {/* Opay Warning Modal - only shows after loading */}
       <OpayWarningModal 
         isOpen={showOpayWarning} 
         onClose={() => setShowOpayWarning(false)} 
