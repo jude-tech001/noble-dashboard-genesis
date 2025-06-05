@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -132,10 +131,9 @@ const Dashboard: React.FC = () => {
             </button>
             <button 
               onClick={() => navigate("/activate-account")}
-              className="bg-green-800 text-white px-6 py-2 rounded-full font-medium text-sm flex items-center space-x-2"
+              className="bg-green-800 text-white px-6 py-2 rounded-full font-medium text-sm"
             >
-              <Download size={16} />
-              <span>Activate Account</span>
+              Activate
             </button>
           </div>
 
