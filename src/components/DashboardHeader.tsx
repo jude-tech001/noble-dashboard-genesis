@@ -17,12 +17,18 @@ const DashboardHeader: React.FC = () => {
     }
   };
 
+  const getFirstName = () => {
+    if (!user?.firstName) return "User";
+    // Take only the first word of the firstName
+    return user.firstName.split(' ')[0];
+  };
+
   return (
     <div className="px-4 py-4 bg-white">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-lg font-semibold text-gray-800">
-            {getGreeting()}, {user?.firstName || "User"}
+            {getGreeting()}, {getFirstName()}
           </h1>
         </div>
         <NotificationBell />
