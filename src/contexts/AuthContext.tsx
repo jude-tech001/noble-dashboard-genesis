@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -47,11 +46,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = async (firstName: string, lastName: string, email: string, password: string) => {
     try {
-      // In a real app, this would make an API call
       setIsLoading(true);
       
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check if user already exists
+      const existingUserData = localStorage.getItem(`user_account_${email}`);
+      
+      if (existingUserData) {
+        // User already exists, redirect to login
+        toast.error("Account already exists. Please login instead.");
+        navigate("/login");
+        return;
+      }
       
       // Check if we have a saved balance for this email
       const savedUserData = localStorage.getItem(`user_data_${email}`);
@@ -71,6 +79,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isActivated: false
       };
       
+      // Save user account info
+      localStorage.setItem(`user_account_${email}`, JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password,
+        id: newUser.id
+      }));
+      
       setUser(newUser);
       toast.success("Account created successfully!");
       navigate("/dashboard");
@@ -84,13 +101,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      // In a real app, this would make an API call
       setIsLoading(true);
       
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Check if we have a saved balance for this email
+      // Check if user account exists
+      const existingUserData = localStorage.getItem(`user_account_${email}`);
+      
+      if (!existingUserData) {
+        throw new Error("User not found");
+      }
+      
+      const userData = JSON.parse(existingUserData);
+      
+      // Verify password
+      if (userData.password !== password) {
+        throw new Error("Invalid password");
+      }
+      
+      // Check if we have saved balance and other data
       const savedUserData = localStorage.getItem(`user_data_${email}`);
       let balance = 0;
       const rewardClaimed = localStorage.getItem("rewardClaimed") === "true";
@@ -102,22 +132,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         balance = JSON.parse(savedUserData).balance || 0;
       }
       
-      // For demo purposes
-      const mockUser: User = {
-        id: Math.random().toString(36).substr(2, 9),
-        firstName: "John",
-        lastName: "Doe",
-        email,
+      const loggedInUser: User = {
+        id: userData.id,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
         balance,
-        isActivated: false
+        isActivated: savedUserData ? JSON.parse(savedUserData).isActivated || false : false
       };
       
-      setUser(mockUser);
+      setUser(loggedInUser);
       toast.success("Logged in successfully!");
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Invalid email or password.");
-      console.error(error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
