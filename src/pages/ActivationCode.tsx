@@ -8,8 +8,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 
 const ActivationCode: React.FC = () => {
@@ -20,6 +18,7 @@ const ActivationCode: React.FC = () => {
   const [withdrawalDetails, setWithdrawalDetails] = useState<any>(null);
   const [displayedCode, setDisplayedCode] = useState<string[]>(["⚪", "⚪", "⚪", "⚪", "⚪", "⚪"]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
   const validCode = "236589";
   
   // Get withdrawal details from sessionStorage
@@ -50,9 +49,16 @@ const ActivationCode: React.FC = () => {
           const newBalance = user.balance - withdrawalDetails.amount;
           // Update user's balance
           updateUserInfo({ balance: newBalance });
-          toast.success(`Withdrawal of ₦${withdrawalDetails.amount.toLocaleString()} successful`);
+          
+          // Show notification first
+          setShowNotification(true);
+          
+          // After 2 seconds, hide notification and show success modal
+          setTimeout(() => {
+            setShowNotification(false);
+            setShowSuccessModal(true);
+          }, 2000);
         }
-        setShowSuccessModal(true);
       } else {
         toast.error("Invalid activation code");
         setActivationCode("");
@@ -106,7 +112,25 @@ const ActivationCode: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white">
+    <div className="min-h-screen flex flex-col items-center bg-white relative">
+      {/* Success Notification */}
+      {showNotification && (
+        <div className="fixed top-4 left-4 right-4 z-50 bg-white rounded-lg shadow-lg p-4 flex items-center">
+          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+              <Check size={16} className="text-blue-600" />
+            </div>
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-800">Transaction Successful</h3>
+            <p className="text-gray-600 text-sm">
+              Your Withdrawal Of ₦{withdrawalDetails?.amount.toLocaleString()} Was Successful
+            </p>
+          </div>
+          <span className="text-xs text-gray-400 ml-auto">09:41</span>
+        </div>
+      )}
+
       {/* Header */}
       <h1 className="text-2xl font-bold text-green-800 mt-8 mb-16">
         Enter Activation PIN
@@ -169,17 +193,17 @@ const ActivationCode: React.FC = () => {
         Buy Activation Code
       </button>
       
-      {/* Success Dialog */}
+      {/* Success Dialog - Updated to match screenshot */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md">
-          <div className="text-center">
-            <div className="mx-auto w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-4">
-              <Check className="h-12 w-12 text-white" />
+        <DialogContent className="sm:max-w-md p-0 gap-0">
+          <div className="text-center p-6">
+            <div className="mx-auto w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6">
+              <Check className="h-10 w-10 text-white" />
             </div>
-            <h2 className="text-2xl font-medium mb-4">Your Withdrawal was successful.</h2>
+            <h2 className="text-xl font-medium mb-8 text-gray-800">Your Withdrawal was successful.</h2>
             <button 
               onClick={handleSuccessClose} 
-              className="w-full bg-green-800 text-white py-4 px-8 rounded-md text-lg font-medium"
+              className="w-full bg-green-800 text-white py-4 px-8 rounded-lg text-lg font-medium"
             >
               OKay
             </button>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Copy, Wallet, User2, Banknote, CheckCircle } from "lucide-react";
@@ -20,6 +21,7 @@ const BankTransferPayment: React.FC = () => {
   const [showOpayWarning, setShowOpayWarning] = useState(false);
   const [buttonText, setButtonText] = useState("I Have Made Payment");
   const [activationCode, setActivationCode] = useState("");
+  const [loadingProgress, setLoadingProgress] = useState(0);
   
   const accountDetails = {
     bankName: "FCMB Bank",
@@ -76,11 +78,23 @@ const BankTransferPayment: React.FC = () => {
   };
 
   const handlePaymentConfirmation = () => {
-    // Show processing dialog
+    // Show processing dialog with 7-second loading
     setShowProcessingDialog(true);
     setButtonText("Pending....");
+    setLoadingProgress(0);
     
-    // After 3 seconds, show success and generate activation code
+    // Update progress every 100ms for 7 seconds
+    const progressInterval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prev + (100 / 70); // 7 seconds = 7000ms, 100ms intervals = 70 steps
+      });
+    }, 100);
+    
+    // After 7 seconds, show success and generate activation code
     setTimeout(() => {
       const newActivationCode = generateActivationCode();
       setActivationCode(newActivationCode);
@@ -96,7 +110,7 @@ const BankTransferPayment: React.FC = () => {
       setShowProcessingDialog(false);
       setShowSuccessDialog(true);
       toast.success("Payment confirmed! Account activated!");
-    }, 3000);
+    }, 7000);
   };
 
   const handleGoToDashboard = () => {
@@ -222,13 +236,24 @@ const BankTransferPayment: React.FC = () => {
         )}
       </div>
 
-      {/* Processing Dialog */}
+      {/* Processing Dialog with 7-second loading */}
       <Dialog open={showProcessingDialog} onOpenChange={setShowProcessingDialog}>
         <DialogContent className="sm:max-w-md p-0 gap-0">
           <div className="p-6">
             <h2 className="text-xl font-bold text-center mb-6">Payment Processing</h2>
-            <div className="flex items-center justify-center">
-              <div className="w-2 h-2 bg-green-800 rounded-full mr-1 animate-pulse"></div>
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-16 h-16 rounded-full border-4 border-gray-200 mb-4 relative">
+                <div 
+                  className="absolute inset-0 rounded-full border-4 border-green-800 border-t-transparent transition-all duration-100"
+                  style={{ 
+                    transform: `rotate(${(loadingProgress / 100) * 360}deg)`,
+                    clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((loadingProgress / 100) * 2 * Math.PI - Math.PI/2)}% ${50 + 50 * Math.sin((loadingProgress / 100) * 2 * Math.PI - Math.PI/2)}%, 100% 100%, 0% 100%)`
+                  }}
+                ></div>
+                <div className="absolute inset-2 bg-green-800 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">{Math.round(loadingProgress)}%</span>
+                </div>
+              </div>
               <p className="text-gray-500">Verifying Payment...</p>
             </div>
           </div>

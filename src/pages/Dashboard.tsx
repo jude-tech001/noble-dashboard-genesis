@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Download } from "lucide-react";
+import { Download, LogOut } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
 import NovaIdCard from "@/components/NovaIdCard";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -11,7 +12,7 @@ import DashboardTabs from "@/components/DashboardTabs";
 import DashboardModals from "@/components/DashboardModals";
 
 const Dashboard: React.FC = () => {
-  const { user, isAuthenticated, updateUserInfo } = useAuth();
+  const { user, isAuthenticated, updateUserInfo, logout } = useAuth();
   const navigate = useNavigate();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showActivationMessage, setShowActivationMessage] = useState(false);
@@ -95,6 +96,11 @@ const Dashboard: React.FC = () => {
     window.open("https://median.co/share/djkaar#apk", "_blank");
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   const handleCloseModal = () => {
     setShowSuccessModal(false);
   };
@@ -105,7 +111,16 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-6">
-      <DashboardHeader />
+      <div className="px-4 py-4 bg-white flex justify-between items-center">
+        <DashboardHeader />
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors"
+        >
+          <LogOut size={20} />
+          <span className="text-sm">Logout</span>
+        </button>
+      </div>
 
       <DashboardTabs
         activeTab={activeTab}
