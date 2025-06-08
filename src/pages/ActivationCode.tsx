@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -50,7 +49,19 @@ const ActivationCode: React.FC = () => {
           // Update user's balance
           updateUserInfo({ balance: newBalance });
           
-          // Show notification first
+          // Add withdrawal transaction to localStorage for transaction history
+          const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+          const newTransaction = {
+            id: `tr-${Date.now()}`,
+            type: "debit",
+            amount: withdrawalDetails.amount,
+            date: new Date().toISOString().split('T')[0],
+            description: `Withdrawal to ${withdrawalDetails.bank}`,
+            status: "completed"
+          };
+          localStorage.setItem('transactions', JSON.stringify([newTransaction, ...existingTransactions]));
+          
+          // Show notification first - centered
           setShowNotification(true);
           
           // After 2 seconds, hide notification and show success modal
@@ -79,9 +90,9 @@ const ActivationCode: React.FC = () => {
   
   const handleSuccessClose = () => {
     setShowSuccessModal(false);
+    // Store withdrawal details for receipt display
+    sessionStorage.setItem('withdrawalDetails', JSON.stringify(withdrawalDetails));
     navigate("/payment-receipt");
-    // Clear withdrawal details from sessionStorage after successful processing
-    sessionStorage.removeItem('withdrawalDetails');
   };
 
   // Keypad button click handler
@@ -113,21 +124,22 @@ const ActivationCode: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-white relative">
-      {/* Success Notification */}
+      {/* Success Notification - Centered */}
       {showNotification && (
-        <div className="fixed top-4 left-4 right-4 z-50 bg-white rounded-lg shadow-lg p-4 flex items-center">
-          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-              <Check size={16} className="text-blue-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 mx-4 max-w-sm w-full">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
+                <Check size={24} className="text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800">Transaction Successful</h3>
+                <p className="text-gray-600 text-sm">
+                  Your Withdrawal Of ₦{withdrawalDetails?.amount.toLocaleString()} Was Successful
+                </p>
+              </div>
             </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-800">Transaction Successful</h3>
-            <p className="text-gray-600 text-sm">
-              Your Withdrawal Of ₦{withdrawalDetails?.amount.toLocaleString()} Was Successful
-            </p>
-          </div>
-          <span className="text-xs text-gray-400 ml-auto">09:41</span>
         </div>
       )}
 
@@ -193,7 +205,7 @@ const ActivationCode: React.FC = () => {
         Buy Activation Code
       </button>
       
-      {/* Success Dialog - Updated to match screenshot */}
+      {/* Success Dialog - Centered */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
         <DialogContent className="sm:max-w-md p-0 gap-0">
           <div className="text-center p-6">

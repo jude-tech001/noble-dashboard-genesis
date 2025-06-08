@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -111,15 +110,8 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-6">
-      <div className="px-4 py-4 bg-white flex justify-between items-center">
+      <div className="px-4 py-4 bg-white">
         <DashboardHeader />
-        <button
-          onClick={handleLogout}
-          className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors"
-        >
-          <LogOut size={20} />
-          <span className="text-sm">Logout</span>
-        </button>
       </div>
 
       <DashboardTabs
@@ -157,6 +149,17 @@ const Dashboard: React.FC = () => {
           </div>
 
           <DashboardQuickMenu onMenuAction={handleMenuAction} />
+          
+          {/* Logout Button - Positioned below quick menu */}
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors px-4 py-2 rounded-lg border border-gray-300"
+            >
+              <LogOut size={20} />
+              <span className="text-sm font-medium">Logout</span>
+            </button>
+          </div>
         </div>
       </DashboardTabs>
 
