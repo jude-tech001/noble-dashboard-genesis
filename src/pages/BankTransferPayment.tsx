@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, Wallet, User2, Banknote } from "lucide-react";
+import { ArrowLeft, Copy, Wallet, User2, Banknote, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,18 +13,24 @@ import OpayWarningModal from "@/components/OpayWarningModal";
 const BankTransferPayment: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, updateUserInfo } = useAuth();
   const [timeLeft, setTimeLeft] = useState(1800); // 30 mins in seconds
   const [showProcessingDialog, setShowProcessingDialog] = useState(false);
-  const [showFailureDialog, setShowFailureDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showOpayWarning, setShowOpayWarning] = useState(false);
   const [buttonText, setButtonText] = useState("I Have Made Payment");
+  const [activationCode, setActivationCode] = useState("");
   
   const accountDetails = {
     bankName: "FCMB Bank",
     accountNumber: "1030512463",
     accountName: "SAMUEL JUDE",
     amount: "₦6,200"
+  };
+  
+  // Generate 6-digit activation code
+  const generateActivationCode = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
   };
   
   // Load account details with delay
@@ -74,16 +80,28 @@ const BankTransferPayment: React.FC = () => {
     setShowProcessingDialog(true);
     setButtonText("Pending....");
     
-    // After 5 seconds, hide processing dialog and show failure dialog
+    // After 3 seconds, show success and generate activation code
     setTimeout(() => {
+      const newActivationCode = generateActivationCode();
+      setActivationCode(newActivationCode);
+      
+      // Activate user account and add balance
+      if (user) {
+        updateUserInfo({ 
+          isActivated: true,
+          balance: user.balance + 6200 
+        });
+      }
+      
       setShowProcessingDialog(false);
-      setShowFailureDialog(true);
-    }, 5000);
+      setShowSuccessDialog(true);
+      toast.success("Payment confirmed! Account activated!");
+    }, 3000);
   };
 
-  const handleTryAgain = () => {
-    setShowFailureDialog(false);
-    setButtonText("I Have Made Payment");
+  const handleGoToDashboard = () => {
+    setShowSuccessDialog(false);
+    navigate("/dashboard");
   };
 
   return (
@@ -211,32 +229,39 @@ const BankTransferPayment: React.FC = () => {
             <h2 className="text-xl font-bold text-center mb-6">Payment Processing</h2>
             <div className="flex items-center justify-center">
               <div className="w-2 h-2 bg-green-800 rounded-full mr-1 animate-pulse"></div>
-              <p className="text-gray-500">Checking For Payment</p>
+              <p className="text-gray-500">Verifying Payment...</p>
             </div>
           </div>
         </DialogContent>
       </Dialog>
       
-      {/* Payment Failure Dialog */}
-      <Dialog open={showFailureDialog} onOpenChange={setShowFailureDialog}>
+      {/* Payment Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent className="sm:max-w-md p-0 gap-0">
           <div className="p-6">
             <div className="flex flex-col items-center mb-4">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5Z" stroke="#6A37FF" strokeWidth="2" />
-                  <path d="M9 12L15 12" stroke="#6A37FF" strokeWidth="2" strokeLinecap="round" />
-                </svg>
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle size={36} className="text-green-600" />
               </div>
-              <h2 className="text-xl font-bold text-center">Payment Not Received</h2>
-              <h2 className="text-xl font-bold text-center">Please Try Again</h2>
+              <h2 className="text-xl font-bold text-center text-green-800">Payment Confirmed!</h2>
+              <p className="text-center text-gray-600 mt-2">Your account has been activated</p>
             </div>
-            <p className="text-center mb-6">Invalid Payment Please Try Again</p>
+            
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <p className="text-sm text-gray-600 text-center mb-2">Your Activation Code</p>
+              <div className="flex justify-center">
+                <span className="text-2xl font-bold text-green-800 bg-white px-4 py-2 rounded border tracking-wider">
+                  {activationCode}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 text-center mt-2">Save this code for your records</p>
+            </div>
+            
             <button
-              onClick={handleTryAgain}
-              className="w-full bg-white text-green-800 py-2 border border-green-800 font-bold rounded-md"
+              onClick={handleGoToDashboard}
+              className="w-full bg-green-800 text-white py-3 rounded-lg font-medium"
             >
-              TRY AGAIN
+              Go to Dashboard
             </button>
           </div>
         </DialogContent>

@@ -1,14 +1,23 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
 
   React.useEffect(() => {
-    // Redirect to welcome page as that's our actual landing page
-    navigate("/");
-  }, [navigate]);
+    if (!isLoading) {
+      if (isAuthenticated) {
+        // User is logged in, redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        // User is not logged in, redirect to welcome page
+        navigate("/");
+      }
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

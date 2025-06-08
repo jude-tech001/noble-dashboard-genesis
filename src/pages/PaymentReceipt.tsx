@@ -15,7 +15,7 @@ const PaymentReceipt: React.FC = () => {
   const navigate = useNavigate();
   const [withdrawalDetails, setWithdrawalDetails] = useState<WithdrawalDetails | null>(null);
   const currentDate = new Date();
-  const formattedDate = `${currentDate.toLocaleDateString('en-US', { weekday: 'short' })}, May 2 2025 ${currentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+  const formattedDate = `${currentDate.toLocaleDateString('en-US', { weekday: 'short' })}, ${currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ${currentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
   
   // Generate a transaction reference
   const transactionRef = "RS_" + Math.random().toString(36).substring(2, 15).toUpperCase();
@@ -27,8 +27,21 @@ const PaymentReceipt: React.FC = () => {
       setWithdrawalDetails(JSON.parse(details));
       // Clear the sessionStorage after retrieving the data
       sessionStorage.removeItem('withdrawalDetails');
+    } else {
+      // If no withdrawal details found, redirect back to dashboard
+      navigate("/dashboard");
     }
-  }, []);
+  }, [navigate]);
+
+  if (!withdrawalDetails) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-xl font-medium text-gray-600">Loading receipt...</h1>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-white">
@@ -51,7 +64,7 @@ const PaymentReceipt: React.FC = () => {
         {/* Amount */}
         <div className="text-center">
           <h2 className="text-3xl font-bold text-green-800">
-            ₦{withdrawalDetails ? withdrawalDetails.amount.toLocaleString() : "0.00"}
+            ₦{withdrawalDetails.amount.toLocaleString()}
           </h2>
           <p className="text-green-500 font-medium">Successful Withdrawal</p>
         </div>
@@ -64,22 +77,22 @@ const PaymentReceipt: React.FC = () => {
             <div className="space-y-4">
               <div className="border-b border-gray-100 pb-3">
                 <p className="text-sm text-gray-500">Amount</p>
-                <p className="font-semibold text-green-800">₦{withdrawalDetails ? withdrawalDetails.amount.toLocaleString() : "0.00"}</p>
+                <p className="font-semibold text-green-800">₦{withdrawalDetails.amount.toLocaleString()}</p>
               </div>
               
               <div className="border-b border-gray-100 pb-3">
                 <p className="text-sm text-gray-500">Account Number</p>
-                <p className="font-semibold">{withdrawalDetails?.accountNumber || "N/A"}</p>
+                <p className="font-semibold">{withdrawalDetails.accountNumber}</p>
               </div>
               
               <div className="border-b border-gray-100 pb-3">
                 <p className="text-sm text-gray-500">Account Name</p>
-                <p className="font-semibold">{withdrawalDetails?.accountName || "N/A"}</p>
+                <p className="font-semibold">{withdrawalDetails.accountName}</p>
               </div>
               
               <div className="border-b border-gray-100 pb-3">
                 <p className="text-sm text-gray-500">Bank Name</p>
-                <p className="font-semibold">{withdrawalDetails?.bank || "N/A"}</p>
+                <p className="font-semibold">{withdrawalDetails.bank}</p>
               </div>
               
               <div className="border-b border-gray-100 pb-3">
