@@ -25,9 +25,9 @@ const BankTransferPayment: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   
   const accountDetails = {
-    bankName: "NOVA BANK",
+    bankName: "MONIEPOINT MFB",
     accountNumber: "6056570413",
-    accountName: "CHUKWUEMEKA AMADI JAMES",
+    accountName: "CHUKWUEMEKA AMADI",
     amount: "₦6,200"
   };
   
