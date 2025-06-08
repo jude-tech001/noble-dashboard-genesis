@@ -1,59 +1,108 @@
 
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 const FlutterwavePayment: React.FC = () => {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Get amount from query params or localStorage
-  const urlParams = new URLSearchParams(window.location.search);
-  const amount = urlParams.get('amount') || localStorage.getItem('fundAmount') || '5000';
-
-  useEffect(() => {
-    // Auto-redirect to confirmation after 3 seconds to simulate payment processing
-    const timer = setTimeout(() => {
-      navigate("/flutterwave-confirmation");
-    }, 3000);
+  const handleBack = () => {
+    navigate(-1);
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     
-    return () => clearTimeout(timer);
-  }, [navigate]);
-
+    if (!fullName.trim()) {
+      toast.error("Please enter your full name");
+      return;
+    }
+    
+    if (!email.trim() || !email.includes('@')) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    // Store user info for the confirmation page
+    sessionStorage.setItem("flutterwave_user", JSON.stringify({ fullName, email }));
+    
+    // Navigate to confirmation page
+    setTimeout(() => {
+      navigate("/flutterwave-confirmation");
+      setIsSubmitting(false);
+    }, 1500);
+  };
+  
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white p-4 flex items-center border-b">
-        <button onClick={() => navigate("/fund-wallet")} className="mr-4">
-          <ArrowLeft size={24} />
-        </button>
-        <h1 className="text-lg font-medium">Flutterwave Payment</h1>
+    <div className="min-h-screen bg-green-800 p-4">
+      <div className="mb-8">
+        <div className="flex items-center">
+          <button onClick={handleBack} className="mr-4">
+            <ArrowLeft size={24} className="text-white" />
+          </button>
+          <h1 className="text-3xl font-bold text-white">NOBLE EARN</h1>
+        </div>
       </div>
       
-      <div className="p-6">
-        {/* Amount to Pay */}
-        <div className="bg-white rounded-lg p-6 mb-6 text-center">
-          <h2 className="text-lg font-medium text-gray-600 mb-2">Amount to Pay</h2>
-          <p className="text-3xl font-bold text-green-800">₦{parseInt(amount).toLocaleString()}</p>
-        </div>
-        
-        {/* Loading State */}
-        <div className="bg-white rounded-lg p-8 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-800 mx-auto mb-4"></div>
-          <h3 className="text-lg font-medium mb-2">Processing Payment</h3>
-          <p className="text-gray-600">Redirecting to Flutterwave gateway...</p>
-        </div>
-        
-        {/* Instructions */}
-        <div className="bg-blue-50 rounded-lg p-4 mt-6">
-          <h4 className="font-medium text-blue-800 mb-2">Payment Instructions</h4>
-          <ul className="text-sm text-blue-700 space-y-1">
-            <li>• You will be redirected to Flutterwave payment gateway</li>
-            <li>• Complete your payment using your preferred method</li>
-            <li>• You will be redirected back after successful payment</li>
-            <li>• Your account will be credited automatically</li>
-          </ul>
-        </div>
-      </div>
+      <Card className="bg-white rounded-3xl p-6 mt-8">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-6">
+            <label className="text-2xl font-medium text-gray-600 block mb-2">
+              Amount
+            </label>
+            <Input 
+              type="text" 
+              value="₦6,200" 
+              disabled
+              className="w-full p-4 text-xl border rounded-lg bg-gray-50"
+            />
+          </div>
+          
+          <div className="mb-6">
+            <label className="text-2xl font-medium text-gray-600 block mb-2">
+              Full Name
+            </label>
+            <Input 
+              type="text"
+              placeholder="Your full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full p-4 text-xl border rounded-lg"
+              required
+            />
+          </div>
+          
+          <div className="mb-10">
+            <label className="text-2xl font-medium text-gray-600 block mb-2">
+              Your Email Address
+            </label>
+            <Input 
+              type="email"
+              placeholder="email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-4 text-xl border rounded-lg"
+              required
+            />
+          </div>
+          
+          <button 
+            type="submit"
+            className="w-full bg-green-800 text-white text-xl py-4 rounded-lg font-medium"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Processing..." : "Pay"}
+          </button>
+        </form>
+      </Card>
     </div>
   );
 };
