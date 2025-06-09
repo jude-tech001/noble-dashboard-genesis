@@ -18,14 +18,14 @@ const Dashboard: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Check if reward was already claimed (stored in localStorage)
+  // Check if reward was already claimed by this specific user
   const [giftClaimed, setGiftClaimed] = useState(() => {
-    return localStorage.getItem("rewardClaimed") === "true";
+    return user ? localStorage.getItem(`rewardClaimed_${user.email}`) === "true" : false;
   });
   
-  // Last claim timestamp for 48-hour cooldown
+  // Last claim timestamp for 48-hour cooldown (user-specific)
   const [lastClaimTime, setLastClaimTime] = useState(() => {
-    return parseInt(localStorage.getItem("lastClaimTime") || "0");
+    return user ? parseInt(localStorage.getItem(`lastClaimTime_${user.email}`) || "0") : 0;
   });
 
   // Check if user has made any withdrawals
@@ -38,15 +38,23 @@ const Dashboard: React.FC = () => {
       navigate("/login");
     }
     
-    // Check if this is a new user session and they have a previous balance
-    if (user && user.balance === 150000 && !lastClaimTime) {
-      // They already have the reward amount, mark as claimed
-      setGiftClaimed(true);
-      localStorage.setItem("rewardClaimed", "true");
-      setLastClaimTime(Date.now());
-      localStorage.setItem("lastClaimTime", Date.now().toString());
+    // Update gift claimed status when user changes
+    if (user) {
+      const userGiftClaimed = localStorage.getItem(`rewardClaimed_${user.email}`) === "true";
+      const userLastClaimTime = parseInt(localStorage.getItem(`lastClaimTime_${user.email}`) || "0");
+      setGiftClaimed(userGiftClaimed);
+      setLastClaimTime(userLastClaimTime);
+      
+      // Check if this is a new user session and they have a previous balance
+      if (user.balance === 150000 && !userLastClaimTime) {
+        // They already have the reward amount, mark as claimed
+        setGiftClaimed(true);
+        localStorage.setItem(`rewardClaimed_${user.email}`, "true");
+        setLastClaimTime(Date.now());
+        localStorage.setItem(`lastClaimTime_${user.email}`, Date.now().toString());
+      }
     }
-  }, [isAuthenticated, navigate, user, lastClaimTime]);
+  }, [isAuthenticated, navigate, user]);
 
   if (!user) {
     return null;
@@ -71,7 +79,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleGiftClick = () => {
-    if (!isProcessing) {
+    if (!isProcessing && user) {
       setIsProcessing(true);
       
       // Add a 4-second loading delay before adding balance
@@ -79,11 +87,11 @@ const Dashboard: React.FC = () => {
         // Update user's balance
         updateUserInfo({ balance: user.balance + 150000 });
         setGiftClaimed(true);
-        localStorage.setItem("rewardClaimed", "true");
+        localStorage.setItem(`rewardClaimed_${user.email}`, "true");
         
-        // Set last claim time
+        // Set last claim time (user-specific)
         setLastClaimTime(Date.now());
-        localStorage.setItem("lastClaimTime", Date.now().toString());
+        localStorage.setItem(`lastClaimTime_${user.email}`, Date.now().toString());
         
         setIsProcessing(false);
         setShowSuccessModal(true);

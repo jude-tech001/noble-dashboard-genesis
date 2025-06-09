@@ -33,8 +33,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/index" element={<Index />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/welcome" element={<Welcome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup/step1" element={<SignupStep1 />} />
             <Route path="/signup/step2" element={<SignupStep2 />} />

