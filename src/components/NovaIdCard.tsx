@@ -13,11 +13,11 @@ const NovaIdCard: React.FC<NovaIdCardProps> = ({ id }) => {
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={copyToClipboard}>
+    <div className="bg-noble-light rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={copyToClipboard}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <svg 
-            className="w-6 h-6 text-green-800 mr-3"
+            className="w-6 h-6 text-noble mr-2"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -26,15 +26,15 @@ const NovaIdCard: React.FC<NovaIdCardProps> = ({ id }) => {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-            <polyline points="10,17 15,12 10,7" />
-            <line x1="15" y1="12" x2="3" y2="12" />
+            <circle cx="8" cy="15" r="4" />
+            <path d="M10.5 11V5a2.5 2.5 0 0 1 5 0v2.5" />
+            <path d="M16 9h2a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9.1a2 2 0 0 1-1.83-1.19" />
           </svg>
-          <span className="font-medium text-gray-800">NOVA ID</span>
+          <span className="font-medium text-noble">NOVA ID</span>
         </div>
-        <button onClick={(e) => { e.stopPropagation(); copyToClipboard(); }} className="text-green-800">
+        <button onClick={(e) => { e.stopPropagation(); copyToClipboard(); }} className="text-noble">
           <svg 
-            className="w-5 h-5" 
+            className="w-6 h-6" 
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -48,7 +48,7 @@ const NovaIdCard: React.FC<NovaIdCardProps> = ({ id }) => {
           </svg>
         </button>
       </div>
-      <p className="text-gray-700 mt-2 text-sm font-mono">{id}</p>
+      <p className="text-gray-700 mt-2 text-sm">{id}</p>
       <p className="text-xs text-gray-500 mt-1">Tap to copy</p>
     </div>
   );

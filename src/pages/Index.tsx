@@ -1,26 +1,32 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import Welcome from "./Welcome";
 
-const Index: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+const Index = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
+  React.useEffect(() => {
+    if (!isLoading) {
+      if (isAuthenticated) {
+        // User is logged in, redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        // User is not logged in, redirect to welcome page
+        navigate("/");
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
 
-  // If user is authenticated, don't render anything while redirecting
-  if (isAuthenticated) {
-    return null;
-  }
-
-  // If not authenticated, show the welcome page
-  return <Welcome />;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-4">Loading...</h1>
+        <p className="text-xl text-gray-600">Please wait while we redirect you.</p>
+      </div>
+    </div>
+  );
 };
 
 export default Index;
