@@ -19,14 +19,19 @@ const Index = () => {
     }
   }, [isAuthenticated, isLoading, navigate]);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Loading...</h1>
-        <p className="text-xl text-gray-600">Please wait while we redirect you.</p>
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="w-12 h-12 border-3 border-green-800 border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
+          <p className="text-xl text-gray-600">Loading...</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return null;
 };
 
 export default Index;
