@@ -2,8 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, Eye, EyeOff, Copy } from "lucide-react";
-import { toast } from "sonner";
+import { LogOut } from "lucide-react";
+import BalanceCard from "@/components/BalanceCard";
+import NovaIdCard from "@/components/NovaIdCard";
+import DashboardHeader from "@/components/DashboardHeader";
+import GiftBox from "@/components/GiftBox";
+import DashboardQuickMenu from "@/components/DashboardQuickMenu";
+import DashboardTabs from "@/components/DashboardTabs";
 import DashboardModals from "@/components/DashboardModals";
 
 const Dashboard: React.FC = () => {
@@ -12,7 +17,7 @@ const Dashboard: React.FC = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showActivationMessage, setShowActivationMessage] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [hideBalance, setHideBalance] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   
   // Check if reward was already claimed (stored in localStorage)
   const [giftClaimed, setGiftClaimed] = useState(() => {
@@ -22,6 +27,11 @@ const Dashboard: React.FC = () => {
   // Last claim timestamp for 48-hour cooldown
   const [lastClaimTime, setLastClaimTime] = useState(() => {
     return parseInt(localStorage.getItem("lastClaimTime") || "0");
+  });
+
+  // Check if user has made any withdrawals
+  const [hasWithdrawn, setHasWithdrawn] = useState(() => {
+    return localStorage.getItem("hasWithdrawn") === "true";
   });
 
   useEffect(() => {
@@ -43,34 +53,39 @@ const Dashboard: React.FC = () => {
     return null;
   }
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      return "Good morning";
-    } else if (hour < 17) {
-      return "Good afternoon";
-    } else {
-      return "Good evening";
+  const handleMenuAction = (action: string) => {
+    if (action === "withdraw") {
+      navigate("/withdraw");
+    } else if (action === "addFund") {
+      navigate("/fund-wallet");
+    } else if (action === "buyAirtime" || action === "buyData") {
+      setShowActivationMessage(true);
+    } else if (action === "activateAccount") {
+      navigate("/activate-account");
+    } else if (action === "transactions") {
+      setActiveTab("transactions");
+    } else if (action === "groups") {
+      setActiveTab("groups");
+    } else if (action === "support") {
+      setActiveTab("support");
     }
   };
-
-  const getFirstName = () => {
-    if (!user?.firstName) return "User";
-    return user.firstName.split(' ')[0];
-  };
-
-  const formattedBalance = new Intl.NumberFormat().format(user.balance);
 
   const handleGiftClick = () => {
     if (!isProcessing) {
       setIsProcessing(true);
       
+      // Add a 4-second loading delay before adding balance
       setTimeout(() => {
+        // Update user's balance
         updateUserInfo({ balance: user.balance + 150000 });
         setGiftClaimed(true);
         localStorage.setItem("rewardClaimed", "true");
+        
+        // Set last claim time
         setLastClaimTime(Date.now());
         localStorage.setItem("lastClaimTime", Date.now().toString());
+        
         setIsProcessing(false);
         setShowSuccessModal(true);
       }, 4000);
@@ -90,184 +105,60 @@ const Dashboard: React.FC = () => {
     setShowActivationMessage(false);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("NOVA ID copied to clipboard!");
-  };
-
-  const handleMenuAction = (action: string) => {
-    if (action === "withdraw") {
-      navigate("/withdraw");
-    } else if (action === "addFund") {
-      navigate("/fund-wallet");
-    } else if (action === "buyAirtime" || action === "buyData") {
-      setShowActivationMessage(true);
-    } else if (action === "activateAccount") {
-      navigate("/activate-account");
-    }
-  };
-
-  const handleDownloadApp = () => {
-    window.open("https://median.co/share/djkaar#apk", "_blank");
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white px-4 py-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-3">
-              <span className="text-white text-lg">👤</span>
-            </div>
-            <div>
-              <h1 className="text-lg font-medium text-gray-800">{getGreeting()}</h1>
-              <p className="text-sm text-gray-600">Hello!</p>
-              <p className="text-lg font-medium text-green-600">{getFirstName()}</p>
-            </div>
-          </div>
-          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-lg">🎧</span>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50 pb-4">
+      <div className="px-4 py-3 bg-white">
+        <DashboardHeader />
       </div>
 
-      <div className="px-4 pb-4 space-y-4">
-        {/* Balance Card */}
-        <div className="bg-green-800 rounded-lg p-4 text-white relative">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm font-medium mb-2">Available Balance</p>
-              <h2 className="text-3xl font-bold flex items-center">
-                ₦{hideBalance ? "•••••" : formattedBalance}
-              </h2>
-            </div>
-            <div className="flex flex-col items-end">
-              <div className="bg-green-600 px-3 py-1 rounded-full mb-2">
-                <p className="text-xs">
-                  {user.isActivated ? "Account Activated" : "Account Not Activated"}
-                </p>
-              </div>
-              <div className="text-xs text-green-200">067584</div>
-              <button
-                onClick={() => setHideBalance(!hideBalance)}
-                className="text-white mt-2"
-              >
-                {hideBalance ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Gift Box */}
-        {!giftClaimed && (
-          <div className="flex justify-center">
-            <button
-              onClick={handleGiftClick}
-              className="w-16 h-16 bg-purple-200 rounded-full flex items-center justify-center"
-              disabled={isProcessing}
-            >
-              {isProcessing ? (
-                <div className="animate-spin w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full"></div>
-              ) : (
-                <span className="text-2xl">🎁</span>
-              )}
-            </button>
-          </div>
-        )}
-
-        {/* Withdraw Button */}
-        <div className="flex justify-center">
-          <button 
-            onClick={() => navigate("/withdraw")}
-            className="bg-green-800 text-white px-8 py-3 rounded-full font-medium"
-          >
-            Withdraw
-          </button>
-        </div>
-
-        {/* NOVA ID Card */}
-        <div className="bg-green-100 rounded-lg p-4 cursor-pointer" onClick={() => copyToClipboard(user.id || "4jnkgsnou8expw2q4390")}>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="w-6 h-6 bg-green-600 rounded mr-3 flex items-center justify-center">
-                <span className="text-white text-xs">🔑</span>
-              </div>
-              <span className="font-medium text-green-800">NOVA ID</span>
-            </div>
-            <Copy size={20} className="text-green-600" />
-          </div>
-          <p className="text-gray-700 mt-2 text-sm">{user.id || "4jnkgsnou8expw2q4390"}</p>
-        </div>
-
-        {/* Top Service's */}
-        <div>
-          <h2 className="text-lg font-medium text-gray-700 mb-3">Top Service's</h2>
-        </div>
-
-        {/* Quick Menu */}
-        <div>
-          <h2 className="text-lg font-medium text-gray-700 mb-4">Quick Menu</h2>
+      <DashboardTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      >
+        <div className="space-y-3 px-4">
+          <BalanceCard balance={user.balance} isActivated={user.isActivated} />
           
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <GiftBox
+            giftClaimed={giftClaimed}
+            isProcessing={isProcessing}
+            lastClaimTime={lastClaimTime}
+            hasWithdrawn={true}
+            onGiftClick={handleGiftClick}
+          />
+
+          <div className="flex justify-center space-x-3">
             <button 
-              onClick={() => handleMenuAction("buyAirtime")}
-              className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm"
+              onClick={() => navigate("/withdraw")}
+              className="bg-green-800 text-white px-5 py-2 rounded-full font-medium text-sm"
             >
-              <div className="w-8 h-8 bg-gray-200 rounded mb-2 flex items-center justify-center">
-                <span className="text-lg">📱</span>
-              </div>
-              <span className="text-sm text-gray-600">Buy Airtime</span>
+              Withdraw
             </button>
-            
             <button 
-              onClick={() => handleMenuAction("buyData")}
-              className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm"
+              onClick={() => navigate("/activate-account")}
+              className="bg-green-800 text-white px-5 py-2 rounded-full font-medium text-sm"
             >
-              <div className="w-8 h-8 bg-gray-200 rounded mb-2 flex items-center justify-center">
-                <span className="text-lg">📊</span>
-              </div>
-              <span className="text-sm text-gray-600">Buy Data</span>
-            </button>
-            
-            <button 
-              onClick={() => handleMenuAction("addFund")}
-              className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm"
-            >
-              <div className="w-8 h-8 bg-gray-200 rounded mb-2 flex items-center justify-center">
-                <span className="text-lg">💰</span>
-              </div>
-              <span className="text-sm text-gray-600">Add fund</span>
+              Activate
             </button>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <button className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm">
-              <div className="w-8 h-8 bg-gray-200 rounded mb-2 flex items-center justify-center">
-                <span className="text-lg">📋</span>
-              </div>
-              <span className="text-sm text-gray-600">Transactions</span>
-            </button>
-            
-            <button className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm">
-              <div className="w-8 h-8 bg-gray-200 rounded mb-2 flex items-center justify-center">
-                <span className="text-lg">🔄</span>
-              </div>
-              <span className="text-sm text-gray-600">Transfer</span>
-            </button>
-            
-            <button 
+          <div className="mt-3">
+            <NovaIdCard id={user.id || "33966608mlfp8gbwes4y"} />
+          </div>
+
+          <DashboardQuickMenu onMenuAction={handleMenuAction} />
+          
+          {/* Logout Button - Positioned below quick menu */}
+          <div className="flex justify-center mt-4">
+            <button
               onClick={handleLogout}
-              className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm"
+              className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors px-4 py-2 rounded-lg border border-gray-300"
             >
-              <div className="w-8 h-8 bg-gray-200 rounded mb-2 flex items-center justify-center">
-                <LogOut size={16} className="text-gray-600" />
-              </div>
-              <span className="text-sm text-gray-600">Log out</span>
+              <LogOut size={18} />
+              <span className="text-sm font-medium">Logout</span>
             </button>
           </div>
         </div>
-      </div>
+      </DashboardTabs>
 
       <DashboardModals
         showSuccessModal={showSuccessModal}
