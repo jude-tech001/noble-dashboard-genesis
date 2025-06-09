@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import BalanceCard from "@/components/BalanceCard";
 import NovaIdCard from "@/components/NovaIdCard";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -27,11 +27,6 @@ const Dashboard: React.FC = () => {
   // Last claim timestamp for 48-hour cooldown
   const [lastClaimTime, setLastClaimTime] = useState(() => {
     return parseInt(localStorage.getItem("lastClaimTime") || "0");
-  });
-
-  // Check if user has made any withdrawals
-  const [hasWithdrawn, setHasWithdrawn] = useState(() => {
-    return localStorage.getItem("hasWithdrawn") === "true";
   });
 
   useEffect(() => {
@@ -106,8 +101,8 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4">
-      <div className="px-4 py-3 bg-white">
+    <div className="min-h-screen bg-gray-50">
+      <div className="px-4 py-2 bg-white">
         <DashboardHeader />
       </div>
 
@@ -115,7 +110,7 @@ const Dashboard: React.FC = () => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
       >
-        <div className="space-y-3 px-4">
+        <div className="space-y-3 px-4 pb-4">
           <BalanceCard balance={user.balance} isActivated={user.isActivated} />
           
           <GiftBox
@@ -126,29 +121,29 @@ const Dashboard: React.FC = () => {
             onGiftClick={handleGiftClick}
           />
 
-          <div className="flex justify-center space-x-3">
+          <div className="flex justify-center space-x-3 mt-3">
             <button 
               onClick={() => navigate("/withdraw")}
-              className="bg-green-800 text-white px-5 py-2 rounded-full font-medium text-sm"
+              className="bg-green-800 text-white px-6 py-2 rounded-full font-medium text-sm"
             >
               Withdraw
             </button>
             <button 
               onClick={() => navigate("/activate-account")}
-              className="bg-green-800 text-white px-5 py-2 rounded-full font-medium text-sm"
+              className="bg-green-800 text-white px-6 py-2 rounded-full font-medium text-sm"
             >
               Activate
             </button>
           </div>
 
           <div className="mt-3">
-            <NovaIdCard id={user.id || "33966608mlfp8gbwes4y"} />
+            <NovaIdCard id={user.id || "xyy5023qm"} />
           </div>
 
           <DashboardQuickMenu onMenuAction={handleMenuAction} />
           
           {/* Logout Button - Positioned below quick menu */}
-          <div className="flex justify-center mt-4">
+          <div className="flex justify-center mt-4 pb-4">
             <button
               onClick={handleLogout}
               className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors px-4 py-2 rounded-lg border border-gray-300"

