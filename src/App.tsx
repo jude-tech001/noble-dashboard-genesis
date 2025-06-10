@@ -21,7 +21,6 @@ import LiveChat from "./pages/LiveChat";
 import ActivateAccount from "./pages/ActivateAccount";
 import BuyActivationCode from "./pages/BuyActivationCode";
 import NotFound from "./pages/NotFound";
-import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +32,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Dashboard />} />
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup/step1" element={<SignupStep1 />} />
