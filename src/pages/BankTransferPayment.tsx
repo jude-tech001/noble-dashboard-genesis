@@ -22,9 +22,9 @@ const BankTransferPayment: React.FC = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   
   const accountDetails = {
-    bankName: "Moniepoint MFB",
-    accountNumber: "6056570413",
-    accountName: "CHUKWUEMEKA AMADI JAMES",
+    bankName: "Stella MFB",
+    accountNumber: "1100892582",
+    accountName: "noble Earn (Agent)",
     amount: "₦6,200"
   };
   
