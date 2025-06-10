@@ -11,9 +11,9 @@ const FundWallet: React.FC = () => {
   const [showOpayWarning, setShowOpayWarning] = useState(false);
 
   const accountDetails = {
-    bankName: "FCMB Bank",
-    accountNumber: "1030512463",
-    accountName: "SAMUEL JUDE",
+    bankName: "Stella MFB",
+    accountNumber: "1100892582",
+    accountName: "NOBLE EARN (AGENT)",
     amount: "₦6,200"
   };
 
