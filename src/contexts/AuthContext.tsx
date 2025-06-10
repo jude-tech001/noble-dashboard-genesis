@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Check if we have saved balance and other data
       const savedUserData = localStorage.getItem(`user_data_${email}`);
       let balance = 0;
-      const rewardClaimed = localStorage.getItem(`rewardClaimed_${email}`) === "true";
+      const rewardClaimed = localStorage.getItem("rewardClaimed") === "true";
       
       // If reward was claimed previously, set balance to reward amount
       if (rewardClaimed) {
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Don't remove rewardClaimed flag or user data
     localStorage.removeItem("noble_user");
     setUser(null);
-    navigate("/welcome");
+    navigate("/");
     toast.success("Logged out successfully!");
   };
 

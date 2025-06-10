@@ -19,9 +19,9 @@ const ActivateAccount: React.FC = () => {
   const [buttonText, setButtonText] = useState("I Have Made Payment");
 
   const accountDetails = {
-    bankName: "Stella MFB",
-    accountNumber: "1100892582",
-    accountName: "Noble earn (Agent)",
+    bankName: "FCMB Bank",
+    accountNumber: "1030512463",
+    accountName: "SAMUEL JUDE",
     amount: "₦15,000"
   };
 

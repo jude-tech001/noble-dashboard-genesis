@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Download, LogOut } from "lucide-react";
+import { Download } from "lucide-react";
 import BalanceCard from "@/components/BalanceCard";
 import NovaIdCard from "@/components/NovaIdCard";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -11,21 +11,21 @@ import DashboardTabs from "@/components/DashboardTabs";
 import DashboardModals from "@/components/DashboardModals";
 
 const Dashboard: React.FC = () => {
-  const { user, isAuthenticated, updateUserInfo, logout } = useAuth();
+  const { user, isAuthenticated, updateUserInfo } = useAuth();
   const navigate = useNavigate();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showActivationMessage, setShowActivationMessage] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Check if reward was already claimed by this specific user
+  // Check if reward was already claimed (stored in localStorage)
   const [giftClaimed, setGiftClaimed] = useState(() => {
-    return user ? localStorage.getItem(`rewardClaimed_${user.email}`) === "true" : false;
+    return localStorage.getItem("rewardClaimed") === "true";
   });
   
-  // Last claim timestamp for 48-hour cooldown (user-specific)
+  // Last claim timestamp for 48-hour cooldown
   const [lastClaimTime, setLastClaimTime] = useState(() => {
-    return user ? parseInt(localStorage.getItem(`lastClaimTime_${user.email}`) || "0") : 0;
+    return parseInt(localStorage.getItem("lastClaimTime") || "0");
   });
 
   // Check if user has made any withdrawals
@@ -38,23 +38,15 @@ const Dashboard: React.FC = () => {
       navigate("/login");
     }
     
-    // Update gift claimed status when user changes
-    if (user) {
-      const userGiftClaimed = localStorage.getItem(`rewardClaimed_${user.email}`) === "true";
-      const userLastClaimTime = parseInt(localStorage.getItem(`lastClaimTime_${user.email}`) || "0");
-      setGiftClaimed(userGiftClaimed);
-      setLastClaimTime(userLastClaimTime);
-      
-      // Check if this is a new user session and they have a previous balance
-      if (user.balance === 150000 && !userLastClaimTime) {
-        // They already have the reward amount, mark as claimed
-        setGiftClaimed(true);
-        localStorage.setItem(`rewardClaimed_${user.email}`, "true");
-        setLastClaimTime(Date.now());
-        localStorage.setItem(`lastClaimTime_${user.email}`, Date.now().toString());
-      }
+    // Check if this is a new user session and they have a previous balance
+    if (user && user.balance === 150000 && !lastClaimTime) {
+      // They already have the reward amount, mark as claimed
+      setGiftClaimed(true);
+      localStorage.setItem("rewardClaimed", "true");
+      setLastClaimTime(Date.now());
+      localStorage.setItem("lastClaimTime", Date.now().toString());
     }
-  }, [isAuthenticated, navigate, user]);
+  }, [isAuthenticated, navigate, user, lastClaimTime]);
 
   if (!user) {
     return null;
@@ -79,7 +71,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleGiftClick = () => {
-    if (!isProcessing && user) {
+    if (!isProcessing) {
       setIsProcessing(true);
       
       // Add a 4-second loading delay before adding balance
@@ -87,11 +79,11 @@ const Dashboard: React.FC = () => {
         // Update user's balance
         updateUserInfo({ balance: user.balance + 150000 });
         setGiftClaimed(true);
-        localStorage.setItem(`rewardClaimed_${user.email}`, "true");
+        localStorage.setItem("rewardClaimed", "true");
         
-        // Set last claim time (user-specific)
+        // Set last claim time
         setLastClaimTime(Date.now());
-        localStorage.setItem(`lastClaimTime_${user.email}`, Date.now().toString());
+        localStorage.setItem("lastClaimTime", Date.now().toString());
         
         setIsProcessing(false);
         setShowSuccessModal(true);
@@ -101,11 +93,6 @@ const Dashboard: React.FC = () => {
 
   const handleDownloadApp = () => {
     window.open("https://median.co/share/djkaar#apk", "_blank");
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
   };
 
   const handleCloseModal = () => {
@@ -118,9 +105,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-6">
-      <div className="px-4 py-4 bg-white">
-        <DashboardHeader />
-      </div>
+      <DashboardHeader />
 
       <DashboardTabs
         activeTab={activeTab}
@@ -157,17 +142,6 @@ const Dashboard: React.FC = () => {
           </div>
 
           <DashboardQuickMenu onMenuAction={handleMenuAction} />
-          
-          {/* Logout Button - Positioned below quick menu */}
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={handleLogout}
-              className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors px-4 py-2 rounded-lg border border-gray-300"
-            >
-              <LogOut size={20} />
-              <span className="text-sm font-medium">Logout</span>
-            </button>
-          </div>
         </div>
       </DashboardTabs>
 

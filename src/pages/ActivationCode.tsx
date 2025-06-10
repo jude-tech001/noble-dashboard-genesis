@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -7,6 +8,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 const ActivationCode: React.FC = () => {
@@ -17,7 +20,6 @@ const ActivationCode: React.FC = () => {
   const [withdrawalDetails, setWithdrawalDetails] = useState<any>(null);
   const [displayedCode, setDisplayedCode] = useState<string[]>(["⚪", "⚪", "⚪", "⚪", "⚪", "⚪"]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
   const validCode = "236589";
   
   // Get withdrawal details from sessionStorage
@@ -48,28 +50,9 @@ const ActivationCode: React.FC = () => {
           const newBalance = user.balance - withdrawalDetails.amount;
           // Update user's balance
           updateUserInfo({ balance: newBalance });
-          
-          // Add withdrawal transaction to localStorage for transaction history
-          const existingTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-          const newTransaction = {
-            id: `tr-${Date.now()}`,
-            type: "debit",
-            amount: withdrawalDetails.amount,
-            date: new Date().toISOString().split('T')[0],
-            description: `Withdrawal to ${withdrawalDetails.bank}`,
-            status: "completed"
-          };
-          localStorage.setItem('transactions', JSON.stringify([newTransaction, ...existingTransactions]));
-          
-          // Show notification first - centered
-          setShowNotification(true);
-          
-          // After 2 seconds, hide notification and show success modal
-          setTimeout(() => {
-            setShowNotification(false);
-            setShowSuccessModal(true);
-          }, 2000);
+          toast.success(`Withdrawal of ₦${withdrawalDetails.amount.toLocaleString()} successful`);
         }
+        setShowSuccessModal(true);
       } else {
         toast.error("Invalid activation code");
         setActivationCode("");
@@ -90,9 +73,9 @@ const ActivationCode: React.FC = () => {
   
   const handleSuccessClose = () => {
     setShowSuccessModal(false);
-    // Store withdrawal details for receipt display
-    sessionStorage.setItem('withdrawalDetails', JSON.stringify(withdrawalDetails));
     navigate("/payment-receipt");
+    // Clear withdrawal details from sessionStorage after successful processing
+    sessionStorage.removeItem('withdrawalDetails');
   };
 
   // Keypad button click handler
@@ -123,26 +106,7 @@ const ActivationCode: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white relative">
-      {/* Success Notification - Centered */}
-      {showNotification && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 mx-4 max-w-sm w-full">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
-                <Check size={24} className="text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-800">Transaction Successful</h3>
-                <p className="text-gray-600 text-sm">
-                  Your Withdrawal Of ₦{withdrawalDetails?.amount.toLocaleString()} Was Successful
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
+    <div className="min-h-screen flex flex-col items-center bg-white">
       {/* Header */}
       <h1 className="text-2xl font-bold text-green-800 mt-8 mb-16">
         Enter Activation PIN
@@ -205,17 +169,17 @@ const ActivationCode: React.FC = () => {
         Buy Activation Code
       </button>
       
-      {/* Success Dialog - Centered */}
+      {/* Success Dialog */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md p-0 gap-0">
-          <div className="text-center p-6">
-            <div className="mx-auto w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6">
-              <Check className="h-10 w-10 text-white" />
+        <DialogContent className="sm:max-w-md">
+          <div className="text-center">
+            <div className="mx-auto w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-4">
+              <Check className="h-12 w-12 text-white" />
             </div>
-            <h2 className="text-xl font-medium mb-8 text-gray-800">Your Withdrawal was successful.</h2>
+            <h2 className="text-2xl font-medium mb-4">Your Withdrawal was successful.</h2>
             <button 
               onClick={handleSuccessClose} 
-              className="w-full bg-green-800 text-white py-4 px-8 rounded-lg text-lg font-medium"
+              className="w-full bg-green-800 text-white py-4 px-8 rounded-md text-lg font-medium"
             >
               OKay
             </button>
