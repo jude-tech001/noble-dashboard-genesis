@@ -21,8 +21,8 @@ const BankTransferPayment: React.FC = () => {
   const [buttonText, setButtonText] = useState("I Have Made Payment");
   
   const accountDetails = {
-    bankName: "Stella MFB",
-    accountNumber: "1100892582",
+    bankName: "Sterling MFB",
+    accountNumber: "0118697498",
     accountName: "NOBLE EARN (AGENT)",
     amount: "₦6,200"
   };
