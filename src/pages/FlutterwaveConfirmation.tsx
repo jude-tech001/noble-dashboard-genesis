@@ -1,15 +1,14 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Copy, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import OpayWarningModal from "@/components/OpayWarningModal";
 
 const FlutterwaveConfirmation: React.FC = () => {
   const navigate = useNavigate();
   const [paymentStatus, setPaymentStatus] = useState<"loading" | "failed" | "none">("none");
   const [userInfo, setUserInfo] = useState<{ fullName?: string, email?: string }>({});
-  const [showOpayWarning, setShowOpayWarning] = useState(true);
   
   useEffect(() => {
     // Get user info from session storage
@@ -47,11 +46,6 @@ const FlutterwaveConfirmation: React.FC = () => {
   if (paymentStatus === "loading") {
     return (
       <div className="min-h-screen bg-white flex flex-col">
-        <OpayWarningModal 
-          isOpen={showOpayWarning} 
-          onClose={() => setShowOpayWarning(false)} 
-        />
-        
         <div className="bg-gray-200 p-4 flex justify-between items-center">
           <h1 className="text-xl font-bold">Bank Transfer</h1>
           <button 
@@ -101,11 +95,6 @@ const FlutterwaveConfirmation: React.FC = () => {
   if (paymentStatus === "failed") {
     return (
       <div className="min-h-screen bg-white flex flex-col">
-        <OpayWarningModal 
-          isOpen={showOpayWarning} 
-          onClose={() => setShowOpayWarning(false)} 
-        />
-        
         <div className="bg-gray-200 p-4 flex justify-between items-center">
           <h1 className="text-xl font-bold">Bank Transfer</h1>
           <button 
@@ -149,11 +138,6 @@ const FlutterwaveConfirmation: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-white">
-      <OpayWarningModal 
-        isOpen={showOpayWarning} 
-        onClose={() => setShowOpayWarning(false)} 
-      />
-      
       <div className="bg-gray-200 p-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">Bank Transfer</h1>
         <button 
@@ -199,10 +183,10 @@ const FlutterwaveConfirmation: React.FC = () => {
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-gray-600">Account Number</p>
-                <p className="text-xl font-bold">0118697498</p>
+                <p className="text-xl font-bold">2147550631</p>
               </div>
               <button 
-                onClick={() => handleCopy("0118697498", "Account Number")}
+                onClick={() => handleCopy("2147550631", "Account Number")}
                 className="bg-green-700 text-white px-4 py-2 rounded"
               >
                 <Copy size={16} className="mr-1 inline" /> Copy
@@ -213,21 +197,21 @@ const FlutterwaveConfirmation: React.FC = () => {
           <div className="mb-4">
             <div>
               <p className="text-gray-600">Bank Name</p>
-              <p className="text-xl font-bold">Sterling Bank</p>
+              <p className="text-xl font-bold">Carbon MFB</p>
             </div>
           </div>
           
           <div>
             <div>
               <p className="text-gray-600">Account Name</p>
-              <p className="text-xl font-bold">NOBLE EARN(AGENT)</p>
+              <p className="text-xl font-bold">FLW-JUDE AGENT</p>
             </div>
           </div>
         </div>
         
         <div className="bg-gray-50 border rounded-lg p-4 mb-6">
           <p className="text-center mb-4">
-            Pay to this specific account and get your account code don't use opay bank for this payment 
+            Pay to this specific account and get your account code
           </p>
           
           <button
