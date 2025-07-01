@@ -61,9 +61,9 @@ const DashboardQuickMenu: React.FC<DashboardQuickMenuProps> = ({ onMenuAction })
         />
         
         <QuickMenuButton
-          icon={<Download size={24} />}
-          label="Download App"
-          onClick={handleDownloadApp}
+          icon={<MessageSquare size={24} />}
+          label="Support"
+          onClick={() => onMenuAction("support")}
         />
         
         <QuickMenuButton
@@ -86,9 +86,9 @@ const DashboardQuickMenu: React.FC<DashboardQuickMenuProps> = ({ onMenuAction })
         />
         
         <QuickMenuButton
-          icon={<MessageSquare size={24} />}
-          label="Support"
-          onClick={() => onMenuAction("support")}
+          icon={<Download size={24} />}
+          label="Download App"
+          onClick={handleDownloadApp}
         />
       </div>
     </div>

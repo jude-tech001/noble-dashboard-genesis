@@ -12,29 +12,32 @@ const SignupStep2: React.FC = () => {
   const [passwordError, setPasswordError] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [moneyItems, setMoneyItems] = useState<Array<{ id: number; left: number; delay: number }>>([]);
+  const [moneyItems, setMoneyItems] = useState<Array<{ id: number; left: number; delay: number; emoji: string }>>([]);
   const navigate = useNavigate();
   const { signup, isLoading } = useAuth();
 
-  // Create falling money effect
+  // Create continuous falling money effect
   useEffect(() => {
+    const moneyEmojis = ['💰', '💵', '💴', '💶', '💷', '🪙', '💸'];
+    
     const createMoneyItem = () => ({
       id: Math.random(),
       left: Math.random() * 100,
-      delay: Math.random() * 3
+      delay: Math.random() * 5,
+      emoji: moneyEmojis[Math.floor(Math.random() * moneyEmojis.length)]
     });
 
     // Create initial money items
-    const initialItems = Array.from({ length: 15 }, createMoneyItem);
+    const initialItems = Array.from({ length: 20 }, createMoneyItem);
     setMoneyItems(initialItems);
 
-    // Add new money items periodically
+    // Continuously add new money items
     const interval = setInterval(() => {
       setMoneyItems(prev => {
-        const newItem = createMoneyItem();
-        return [...prev.slice(-14), newItem];
+        const newItems = Array.from({ length: 3 }, createMoneyItem);
+        return [...prev.slice(-17), ...newItems];
       });
-    }, 2000);
+    }, 1500);
 
     return () => clearInterval(interval);
   }, []);
@@ -54,7 +57,7 @@ const SignupStep2: React.FC = () => {
     setLastName(storedLastName);
   }, [navigate]);
 
-  const validateEmail = (email: string): boolean => {
+  function validateEmail(email: string): boolean {
     if (!email) {
       setEmailError("Email is required");
       return false;
@@ -68,9 +71,9 @@ const SignupStep2: React.FC = () => {
     
     setEmailError("");
     return true;
-  };
+  }
   
-  const validatePassword = (password: string): boolean => {
+  function validatePassword(password: string): boolean {
     if (!password) {
       setPasswordError("Password is required");
       return false;
@@ -88,9 +91,9 @@ const SignupStep2: React.FC = () => {
     
     setPasswordError("");
     return true;
-  };
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     
     const isEmailValid = validateEmail(email);
@@ -109,22 +112,23 @@ const SignupStep2: React.FC = () => {
     } catch (error) {
       console.error("Signup error:", error);
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-white px-4 relative overflow-hidden">
-      {/* Falling Money Effect */}
+      {/* Enhanced Falling Money Effect */}
       {moneyItems.map((item) => (
         <div
           key={item.id}
-          className="absolute text-2xl pointer-events-none animate-[float_8s_linear_infinite]"
+          className="absolute text-3xl pointer-events-none money-falling"
           style={{
             left: `${item.left}%`,
             animationDelay: `${item.delay}s`,
-            top: '-50px',
+            top: '-100px',
+            zIndex: 1,
           }}
         >
-          💰
+          {item.emoji}
         </div>
       ))}
       
