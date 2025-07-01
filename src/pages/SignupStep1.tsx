@@ -13,26 +13,26 @@ const SignupStep1: React.FC = () => {
 
   // Create continuous falling money effect
   useEffect(() => {
-    const moneyEmojis = ['💰', '💵', '💴', '💶', '💷', '🪙', '💸'];
+    const moneyEmojis = ['💰', '💵', '💴', '💶', '💷', '🪙', '💸', '💎', '🏆', '💳'];
     
     const createMoneyItem = () => ({
       id: Math.random(),
-      left: Math.random() * 100,
-      delay: Math.random() * 5,
+      left: Math.random() * 95, // Keep within screen bounds
+      delay: Math.random() * 3,
       emoji: moneyEmojis[Math.floor(Math.random() * moneyEmojis.length)]
     });
 
     // Create initial money items
-    const initialItems = Array.from({ length: 20 }, createMoneyItem);
+    const initialItems = Array.from({ length: 25 }, createMoneyItem);
     setMoneyItems(initialItems);
 
     // Continuously add new money items
     const interval = setInterval(() => {
       setMoneyItems(prev => {
-        const newItems = Array.from({ length: 3 }, createMoneyItem);
-        return [...prev.slice(-17), ...newItems];
+        const newItems = Array.from({ length: 4 }, createMoneyItem);
+        return [...prev.slice(-21), ...newItems];
       });
-    }, 1500);
+    }, 1200);
 
     return () => clearInterval(interval);
   }, []);
@@ -97,16 +97,14 @@ const SignupStep1: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white px-4 relative overflow-hidden">
-      {/* Enhanced Falling Money Effect */}
+      {/* Enhanced Money Falling Effect */}
       {moneyItems.map((item) => (
         <div
           key={item.id}
-          className="absolute text-3xl pointer-events-none money-falling"
+          className="money-falling"
           style={{
             left: `${item.left}%`,
             animationDelay: `${item.delay}s`,
-            top: '-100px',
-            zIndex: 1,
           }}
         >
           {item.emoji}

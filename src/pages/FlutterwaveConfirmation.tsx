@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Copy, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import OpayWarningModal from "@/components/OpayWarningModal";
 
 const FlutterwaveConfirmation: React.FC = () => {
   const navigate = useNavigate();
   const [paymentStatus, setPaymentStatus] = useState<"loading" | "failed" | "none">("none");
   const [userInfo, setUserInfo] = useState<{ fullName?: string, email?: string }>({});
+  const [showOpayWarning, setShowOpayWarning] = useState(false);
   
   useEffect(() => {
     // Get user info from session storage
@@ -17,7 +19,8 @@ const FlutterwaveConfirmation: React.FC = () => {
       setUserInfo(JSON.parse(userData));
     }
     
-    // Initial state is "none" - showing account details
+    // Show Opay warning modal when component mounts
+    setShowOpayWarning(true);
   }, []);
   
   const handleCopy = (text: string, type: string) => {
@@ -138,6 +141,11 @@ const FlutterwaveConfirmation: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-white">
+      <OpayWarningModal 
+        isOpen={showOpayWarning} 
+        onClose={() => setShowOpayWarning(false)} 
+      />
+      
       <div className="bg-gray-200 p-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">Bank Transfer</h1>
         <button 
