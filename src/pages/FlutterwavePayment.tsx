@@ -1,16 +1,27 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import OpayWarningModal from "@/components/OpayWarningModal";
 
 const FlutterwavePayment: React.FC = () => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showOpayWarning, setShowOpayWarning] = useState(false);
+  
+  // Show Opay warning when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowOpayWarning(true);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   const handleBack = () => {
     navigate(-1);
@@ -43,6 +54,12 @@ const FlutterwavePayment: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-green-800 p-4">
+      {/* Opay Warning Modal */}
+      <OpayWarningModal 
+        isOpen={showOpayWarning} 
+        onClose={() => setShowOpayWarning(false)} 
+      />
+
       <div className="mb-8">
         <div className="flex items-center">
           <button onClick={handleBack} className="mr-4">

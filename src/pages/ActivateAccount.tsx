@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Copy, Banknote, User2, Wallet } from "lucide-react";
@@ -19,9 +20,9 @@ const ActivateAccount: React.FC = () => {
   const [buttonText, setButtonText] = useState("I Have Made Payment");
 
   const accountDetails = {
-    bankName: "Sterling Bank",
-    accountNumber: "0118697498",
-    accountName: "NOBLE EARN(AGENT)",
+    bankName: "Carbon MFB",
+    accountNumber: "2147550631",
+    accountName: "FLW-JUDE AGENT",
     amount: "₦15,000"
   };
 

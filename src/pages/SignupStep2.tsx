@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,8 +12,32 @@ const SignupStep2: React.FC = () => {
   const [passwordError, setPasswordError] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [moneyItems, setMoneyItems] = useState<Array<{ id: number; left: number; delay: number }>>([]);
   const navigate = useNavigate();
   const { signup, isLoading } = useAuth();
+
+  // Create falling money effect
+  useEffect(() => {
+    const createMoneyItem = () => ({
+      id: Math.random(),
+      left: Math.random() * 100,
+      delay: Math.random() * 3
+    });
+
+    // Create initial money items
+    const initialItems = Array.from({ length: 15 }, createMoneyItem);
+    setMoneyItems(initialItems);
+
+    // Add new money items periodically
+    const interval = setInterval(() => {
+      setMoneyItems(prev => {
+        const newItem = createMoneyItem();
+        return [...prev.slice(-14), newItem];
+      });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Get stored data from previous step
@@ -89,12 +112,27 @@ const SignupStep2: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white px-4">
-      <div className="pt-10">
+    <div className="min-h-screen bg-white px-4 relative overflow-hidden">
+      {/* Falling Money Effect */}
+      {moneyItems.map((item) => (
+        <div
+          key={item.id}
+          className="absolute text-2xl pointer-events-none animate-[float_8s_linear_infinite]"
+          style={{
+            left: `${item.left}%`,
+            animationDelay: `${item.delay}s`,
+            top: '-50px',
+          }}
+        >
+          💰
+        </div>
+      ))}
+      
+      <div className="pt-10 relative z-10">
         <BackButton to="/signup/step1" />
       </div>
       
-      <div className="mt-14">
+      <div className="mt-14 relative z-10">
         <h1 className="text-3xl font-bold mb-1">Good job!,</h1>
         <h2 className="text-3xl font-bold">You are almost done.</h2>
         

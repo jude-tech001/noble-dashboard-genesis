@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import PasswordInput from "@/components/PasswordInput";
@@ -11,8 +10,32 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [moneyItems, setMoneyItems] = useState<Array<{ id: number; left: number; delay: number }>>([]);
   const navigate = useNavigate();
   const { login, isLoading } = useAuth();
+
+  // Create falling money effect
+  useEffect(() => {
+    const createMoneyItem = () => ({
+      id: Math.random(),
+      left: Math.random() * 100,
+      delay: Math.random() * 3
+    });
+
+    // Create initial money items
+    const initialItems = Array.from({ length: 15 }, createMoneyItem);
+    setMoneyItems(initialItems);
+
+    // Add new money items periodically
+    const interval = setInterval(() => {
+      setMoneyItems(prev => {
+        const newItem = createMoneyItem();
+        return [...prev.slice(-14), newItem];
+      });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const validateEmail = (email: string): boolean => {
     if (!email) {
@@ -65,12 +88,27 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white px-4 flex flex-col">
-      <div className="pt-10 flex justify-center">
+    <div className="min-h-screen bg-white px-4 flex flex-col relative overflow-hidden">
+      {/* Falling Money Effect */}
+      {moneyItems.map((item) => (
+        <div
+          key={item.id}
+          className="absolute text-2xl pointer-events-none animate-[float_8s_linear_infinite]"
+          style={{
+            left: `${item.left}%`,
+            animationDelay: `${item.delay}s`,
+            top: '-50px',
+          }}
+        >
+          💰
+        </div>
+      ))}
+      
+      <div className="pt-10 flex justify-center relative z-10">
         <Logo />
       </div>
       
-      <div className="mt-14 flex-1">
+      <div className="mt-14 flex-1 relative z-10">
         <h1 className="text-3xl font-bold text-center mb-10">Login</h1>
         
         <form onSubmit={handleSubmit} className="space-y-6">
