@@ -20,10 +20,10 @@ const ActivateAccount: React.FC = () => {
   const [buttonText, setButtonText] = useState("I Have Made Payment");
 
   const accountDetails = {
-    bankName: "Carbon MFB",
-    accountNumber: "2147550631",
+    bankName: "Assets MFB",
+    accountNumber: "1000045414",
     accountName: "FLW-JUDE AGENT",
-    amount: "₦15,000"
+    amount: "₦10,000"
   };
 
   const handleBack = () => {
